@@ -1,0 +1,27 @@
+#registration {
+    margin: 0;
+    padding: 0;
+    background-color: grey;
+    height: 100vh;
+}
+#registration .container #registration-row #registration-column #registration-box {
+    margin-top: 120px;
+    max-width: 600px;
+    height: 400px;
+    border: 1px solid #9C9C9C;
+    background-color: #EAEAEA;
+}
+#registration .container #registration-row #registration-column #registration-box #registration-form {
+    padding: 20px;
+}
+
+#registration-failed {
+    text-align: center;
+    color:red;
+}
+
+
+#not-match-passwords {
+    text-align: center;
+    color:red;
+}
