@@ -28,7 +28,7 @@ func NewRouter(userHandlers handlers.User, taskHandlers task_handlers.TaskHandle
 	router.HandleFunc("/state", middlewares.Authorization(sessionManager, userHandlers.State)).Methods("GET")
 
 	//redirect to user
-	router.HandleFunc("/user", middlewares.Authorization(sessionManager, userHandlers.User)).Methods("GET")
+	router.HandleFunc("/user", middlewares.Authorization(sessionManager, userHandlers.List)).Methods("GET")
 
 	//redirect to user
 	router.HandleFunc("/admin", taskHandlers.List).Methods("GET")
@@ -39,12 +39,19 @@ func NewRouter(userHandlers handlers.User, taskHandlers task_handlers.TaskHandle
 	//task new
 	router.HandleFunc("/tasks/new", taskHandlers.Create).Methods("POST")
 
+	//read one task
+	router.HandleFunc("/tasks/{id}", taskHandlers.ReadOne).Methods("GET")
+
 	//edit
-	router.HandleFunc("/tasks/{id}", taskHandlers.Edit).Methods("GET")
+	router.HandleFunc("/tasks/edit/{id}", taskHandlers.Edit).Methods("GET")
+
 	//updated
-	router.HandleFunc("/tasks/{id}", taskHandlers.Update).Methods("POST")
+	router.HandleFunc("/tasks/{id}", taskHandlers.Update).Methods("PATH")
 
 	router.HandleFunc("/tasks/{id}", taskHandlers.Delete).Methods("DELETE")
+
+	//send solution {id - taskID}
+	router.HandleFunc("/tasks/solution/{id}", taskHandlers.SolutionForm).Methods("GET")
 
 	//подключаем статику к форме login-а
 	router.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir("./web/user/template/"))))

@@ -59,6 +59,7 @@ func main() {
 		Tmpl:      template.Must(template.ParseGlob("./web/user/template/*")),
 		UsersRepo: user_repo.NewUsersRepo(db),
 		//TODO дубль подумать использовать ли интерфейс!!!!!!!!!
+		TasksRepo: task_repo.NewTasksRepo(db),
 		SessionManager: manager,
 		Logger:         logger,
 	}

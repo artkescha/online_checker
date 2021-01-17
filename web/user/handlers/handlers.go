@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"gitlab.com/artkescha/grader/online_checker/pkg/session"
+	"gitlab.com/artkescha/grader/online_checker/pkg/task"
+	task_repo "gitlab.com/artkescha/grader/online_checker/pkg/task/repository"
 	"gitlab.com/artkescha/grader/online_checker/pkg/user"
 	"gitlab.com/artkescha/grader/online_checker/pkg/user/repository"
 	"gitlab.com/artkescha/grader/online_checker/web/request"
@@ -20,7 +22,7 @@ type User interface {
 	Login(w http.ResponseWriter, r *http.Request)
 	LogOut(w http.ResponseWriter, r *http.Request)
 	State(w http.ResponseWriter, r *http.Request)
-	User(w http.ResponseWriter, r *http.Request)
+	List(w http.ResponseWriter, r *http.Request)
 	Index(w http.ResponseWriter, r *http.Request)
 	RegisterForm(w http.ResponseWriter, r *http.Request)
 }
@@ -28,6 +30,7 @@ type User interface {
 type UserHandler struct {
 	Tmpl           *template.Template
 	UsersRepo      repository.UserRepo
+	TasksRepo      task_repo.TaskRepo
 	SessionManager session.Manager
 	Logger         *zap.SugaredLogger
 }
@@ -127,10 +130,22 @@ func (h UserHandler) State(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/admin", http.StatusSeeOther)
 }
 
-func (h UserHandler) User(w http.ResponseWriter, r *http.Request) {
-	err := h.Tmpl.ExecuteTemplate(w, "user.html", nil)
+func (h UserHandler) List(w http.ResponseWriter, r *http.Request) {
+	//TODO limit:3 offset:0 in request
+	tasks, err := h.TasksRepo.List(r.Context(), 100, 0, "created_at")
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		h.Logger.Error("get tasks list err", err)
+		http.Error(w, `DB err`, http.StatusInternalServerError)
+		return
+	}
+	err = h.Tmpl.ExecuteTemplate(w, "list.html", struct {
+		Tasks []task.Task
+	}{
+		Tasks: tasks,
+	})
+	if err != nil {
+		h.Logger.Error("tasks list executeTemplate err", err)
+		http.Error(w, `tasks list template err`, http.StatusInternalServerError)
 		return
 	}
 }

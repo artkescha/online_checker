@@ -19,7 +19,6 @@
         <tr>
             <th>#</th>
             <th>Tasks</th>
-            <th style="width:140px;"><a href="/tasks/new" class="btn btn-success">New</a></th>
         </tr>
         </thead>
         <tbody>
@@ -29,45 +28,12 @@
             <td><a href="/tasks/{{.ID}}" class="btn btn-primary">{{.Title}}</a></td>
             <td>{{.Created}}</td>
             <td>{{.TestsPaths}}</td>
-            <td>
-                <a href="/tasks/{{.ID}}" class="btn btn-primary">Edit</a>
-                <span data-id="{{.ID}}" class="do-delete btn btn-danger">Del</span>
-            </td>
         </tr>
         {{end}}
         </tbody>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
-
-<script type="text/javascript">
-    $('.do-delete').click(function() {
-        if(!confirm("Are you sure?")) {
-            return
-        }
-        $elem = $(this)
-        $.ajax({
-            url: '/tasks/' + $elem.data("id"),
-            type: 'DELETE',
-            data: {},
-            success: function(resp) {
-                //if success in json
-                if(Object.values(resp)[0]) {
-                    $elem.parent().parent().remove()
-                    $.ajax({
-                        url: '/admin',
-                        type: 'GET',
-                        data: {},
-                        success: function(data) {
-                                $('html').html(data)
-
-                        },
-                    })
-                }
-            },
-        });
-    })
-</script>
 
 </body>
 </html>

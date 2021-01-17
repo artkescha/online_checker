@@ -7,6 +7,7 @@ import (
 	"gitlab.com/artkescha/grader/online_checker/pkg/session"
 	"gitlab.com/artkescha/grader/online_checker/pkg/task"
 	"gitlab.com/artkescha/grader/online_checker/pkg/task/repository"
+	//"gitlab.com/artkescha/grader/online_checker/web/request"
 	"gitlab.com/artkescha/grader/online_checker/web/response"
 	"go.uber.org/zap"
 	"html/template"
@@ -17,7 +18,8 @@ import (
 type Tasker interface {
 	Create(w http.ResponseWriter, r *http.Request)
 	List(w http.ResponseWriter, r *http.Request)
-	Edit(w http.ResponseWriter, r *http.Request)
+	EditForm(w http.ResponseWriter, r *http.Request)
+	ReadOne(w http.ResponseWriter, r *http.Request)
 	Update(w http.ResponseWriter, r *http.Request)
 	Delete(w http.ResponseWriter, r *http.Request)
 	CreateForm(w http.ResponseWriter, r *http.Request)
@@ -94,6 +96,24 @@ func (h TaskHandler) Edit(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (h *TaskHandler) ReadOne(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, err := strconv.Atoi(vars["id"])
+
+	task, err := h.TasksRepo.GetByID(r.Context(), id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	err = h.Tmpl.ExecuteTemplate(w, "description.html", task)
+	if err != nil {
+		http.Error(w, `Template err`, http.StatusInternalServerError)
+		return
+	}
+
+	h.Logger.Infof("read task %v with id: %d", task, id)
+}
+
 func (h *TaskHandler) Update(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
@@ -137,6 +157,33 @@ func (h TaskHandler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	response.WriteResponse(w, http.StatusOK, ok, "success")
+}
+
+func (h TaskHandler) SolutionForm(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	taskID, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		http.Error(w, `bad id`, http.StatusBadRequest)
+		return
+	}
+	//TODO middelware later
+	//user, err := request.ExtractContext(r)
+	//if err != nil {
+	//	response.WriteError(w, http.StatusUnauthorized, err)
+	//	return
+	//}
+	//h.Logger.Info("user: %s", user)
+	//TODO replace later languageID = 1 (golang 1.13)
+	err = h.Tmpl.ExecuteTemplate(w, "send_solution.html", struct {
+		TaskID     int
+		LanguageID int
+	}{TaskID: taskID, LanguageID: 1})
+
+	if err != nil {
+		h.Logger.Error("execute send solution template err", err)
+		http.Error(w, `send solution template err`, http.StatusInternalServerError)
+		return
+	}
 }
 
 func (h TaskHandler) CreateForm(w http.ResponseWriter, r *http.Request) {

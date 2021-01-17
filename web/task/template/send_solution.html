@@ -11,16 +11,18 @@
 <body>
 
 <div class="container">
-    <h1>Edit item</h1>
+    <h1>Send your solution</h1>
 
-    <form method="post" action="/tasks/edit/{{.ID}}">
+    <form method="post" action="/tasks/solution">
         <div class="form-group">
-            <label for="title">Title</label>
-            <input type="text" class="form-control" name="title" id="title" value="{{.Title}}">
+            <label for="language">language ID</label>
+            <label for="language">{{.LanguageID}}</label>
+            <label for="language">task ID</label>
+            <label for="language">{{.TaskID}}</label>
         </div>
         <div class="form-group">
-            <label for="description">Description</label>
-            <textarea class="form-control" name="description" id="description" rows="3">{{.Description}}</textarea>
+            <label for="solution">Solution:</label>
+            <textarea class="form-control" name="solution" id="solution" rows="3"></textarea>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
