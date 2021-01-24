@@ -2,10 +2,10 @@ package router
 
 import (
 	"github.com/gorilla/mux"
-	"gitlab.com/artkescha/grader/online_checker/pkg/middlewares"
-	"gitlab.com/artkescha/grader/online_checker/pkg/session"
-	task_handlers "gitlab.com/artkescha/grader/online_checker/web/task/handlers"
-	"gitlab.com/artkescha/grader/online_checker/web/user/handlers"
+	"github.com/artkescha/grader/online_checker/pkg/middlewares"
+	"github.com/artkescha/grader/online_checker/pkg/session"
+	task_handlers "github.com/artkescha/grader/online_checker/web/task/handlers"
+	"github.com/artkescha/grader/online_checker/web/user/handlers"
 	"net/http"
 )
 

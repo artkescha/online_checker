@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"gitlab.com/artkescha/grader/online_checker/pkg/tries"
+	"github.com/artkescha/grader/online_checker/pkg/tries"
 )
 
 type TriesRepo interface {

@@ -5,7 +5,7 @@ import (
 	"github.com/bradfitz/gomemcache/memcache"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/satori/go.uuid"
-	"gitlab.com/artkescha/grader/online_checker/pkg/user"
+	"github.com/artkescha/grader/online_checker/pkg/user"
 	//"os"
 	"reflect"
 	"strconv"

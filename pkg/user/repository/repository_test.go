@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"gitlab.com/artkescha/grader/online_checker/pkg/user"
+	"github.com/artkescha/grader/online_checker/pkg/user"
 )
 
 func TestRepo_Insert(t *testing.T) {
@@ -36,6 +36,7 @@ func TestRepo_Insert(t *testing.T) {
 				ID:       1,
 				Name:     "artem",
 				Password: "12345678",
+				RoleID:   2,
 			},
 			wantErr: false,
 		},
@@ -53,7 +54,7 @@ func TestRepo_Insert(t *testing.T) {
 	for _, tt := range tests {
 		const query = `INSERT INTO`
 		mock.ExpectQuery(query).
-			WithArgs(tt.login, tt.password).
+			WithArgs(tt.login, tt.password, 2).
 			WillReturnRows(tt.wantRows)
 		repo := &Repo{
 			db: tt.db,
@@ -89,11 +90,12 @@ func TestRepo_GetUserByLogin(t *testing.T) {
 			name:     "test without error",
 			db:       db,
 			login:    "artem",
-			wantRows: sqlmock.NewRows([]string{"id", "name", "password"}).AddRow(1, "artem", user.GetMD5Password("12345678")),
+			wantRows: sqlmock.NewRows([]string{"id", "name", "password", "role_id"}).AddRow(1, "artem", user.GetMD5Password("12345678"), 2),
 			want: &user.User{
 				ID:       1,
 				Name:     "artem",
 				Password: user.GetMD5Password("12345678"),
+				RoleID:2,
 			},
 			wantErr: false,
 		},
