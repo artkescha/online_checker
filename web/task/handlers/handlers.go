@@ -232,7 +232,7 @@ func (h TaskHandler) UploadTests(w http.ResponseWriter, r *http.Request) {
 	rootPath := "../tests/"
 
 	//make rootPath
-	fStorage, err := fileStorage.New(rootPath)
+	fStorage, err := fileStorage.New("../temp-zip", rootPath)
 
 	if err != nil {
 		uploadError = err
@@ -319,7 +319,7 @@ func (h TaskHandler) DownloadTests(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//make rootPath
-	fStorage, err := fileStorage.New(rootArchPath)
+	fStorage, err := fileStorage.New("../temp-zip", rootArchPath)
 	if err != nil {
 		downloadError = err
 		h.Logger.Errorf("create file storage failed %s: ", err)

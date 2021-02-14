@@ -16,7 +16,6 @@ type Zipper interface {
 
 type zipper struct {
 	archName string
-	files    []string
 	w        *zip.Writer
 }
 
@@ -57,8 +56,6 @@ func (z *zipper) Add(filePaths []string, archName string) error {
 		_, err = io.Copy(writer, fileToZip)
 		//because in loop
 		fileToZip.Close()
-
-		z.files = append(z.files, filePath)
 	}
 	return nil
 }

@@ -14,9 +14,7 @@ type UnZipper interface {
 	Unzip(src string, dest string, fileExpansiones []string) error
 }
 
-type unzipper struct {
-	files []string
-}
+type unzipper struct {}
 
 func New() UnZipper {
 	return &unzipper{}
@@ -50,8 +48,6 @@ func (uz unzipper) Unzip(src string, dest string, fileExpansiones []string) erro
 		if !strings.HasPrefix(fpath, filepath.Clean(dest)+string(os.PathSeparator)) {
 			return fmt.Errorf("%s: illegal file path", fpath)
 		}
-
-		uz.files = append(uz.files, fpath)
 
 		// Make File
 		if err = os.MkdirAll(filepath.Dir(fpath), os.ModePerm); err != nil {

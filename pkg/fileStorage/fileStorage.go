@@ -14,24 +14,25 @@ type FileStorage interface {
 	DownloadFile(id uint64) ([]byte, error)
 }
 
-func New(rootPath string) (*fileStorage, error) {
-	if exist := kit.ExistsFolder(rootPath); !exist {
-		if err := kit.EnsureDir(rootPath); err != nil {
-			fmt.Printf("create path %s failed %s", rootPath, err)
+func New(tempFolder, target string) (*fileStorage, error) {
+	if exist := kit.ExistsFolder(target); !exist {
+		if err := kit.EnsureDir(target); err != nil {
+			fmt.Printf("create path %s failed %s", target, err)
 		}
 	}
-	return &fileStorage{rootPath: rootPath}, nil
+	return &fileStorage{targetPath: target, tempFolder:tempFolder}, nil
 
 }
 
 type fileStorage struct {
-	rootPath string
+	targetPath string
+	tempFolder string
 }
 
 func (fs fileStorage) UploadFile(file multipart.File) (string, error) {
 	// Create a temporary file within our temp-zip directory that follows
 	// a particular naming pattern
-	tempFile, err := ioutil.TempFile("./temp-zip", "upload-*.zip")
+	tempFile, err := ioutil.TempFile(fs.tempFolder, "upload-*.zip")
 	if err != nil {
 		return "", fmt.Errorf("creating temp file failed: %s", err)
 	}
@@ -56,7 +57,7 @@ func (fs fileStorage) UploadFile(file multipart.File) (string, error) {
 
 func (fs fileStorage) DownloadFile(path string) ([]byte, error) {
 
-	path = filepath.Join(fs.rootPath, path)
+	path = filepath.Join(fs.targetPath, path)
 
 	fileBytes, err := ioutil.ReadFile(path)
 
