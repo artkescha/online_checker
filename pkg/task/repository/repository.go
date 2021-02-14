@@ -51,7 +51,7 @@ func (repo Repo) List(ctx context.Context, limit, offset uint32, sortField strin
 
 	for rows.Next() {
 		task := task.Task{}
-		err = rows.Scan(&task.ID, &task.Title, &task.Description, &task.Created, &task.TestsPaths)
+		err = rows.Scan(&task.ID, &task.Title, &task.Description, &task.Created, &task.TestsPath)
 		if err != nil {
 			return nil, fmt.Errorf("read rows tasks list failed: %s", err)
 		}

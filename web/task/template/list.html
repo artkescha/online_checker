@@ -28,15 +28,16 @@
             <td>{{.ID}}</td>
             <td><a href="/tasks/{{.ID}}" class="btn btn-primary">{{.Title}}</a></td>
             <td>{{.Created}}</td>
-            <td>{{.TestsPaths}}</td>
+            <td>{{.TestsPath}}</td>
             <td>
-                <a href="/tasks/{{.ID}}" class="btn btn-primary">Edit</a>
+                <a href="/tasks/edit/{{.ID}}" class="btn btn-primary">Edit</a>
                 <span data-id="{{.ID}}" class="do-delete btn btn-danger">Del</span>
             </td>
         </tr>
         {{end}}
         </tbody>
 </div>
+
 
 <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
 

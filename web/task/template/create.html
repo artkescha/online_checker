@@ -13,7 +13,7 @@
 <div class="container">
     <h1>Create task</h1>
 
-    <form method="post" action="/tasks/new">
+    <form method="post" action="/tasks">
         <div class="form-group">
             <label for="title">Title</label>
             <input type="text" class="form-control" name="title" id="title" value="{{.Title}}">
@@ -21,6 +21,9 @@
         <div class="form-group">
             <label for="description">Description</label>
             <textarea class="form-control" name="description" id="description" rows="3">{{.Description}}</textarea>
+
+            <span><strong>Тесты к задаче можно добавить только в режиме редактирования!</strong></span>
+
         </div>
         <button type="submit" class="btn btn-primary">Add</button>
     </form>

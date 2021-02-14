@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/artkescha/grader/online_checker/pkg/session"
 	"github.com/artkescha/grader/online_checker/pkg/task"
 	task_repo "github.com/artkescha/grader/online_checker/pkg/task/repository"
@@ -145,7 +146,7 @@ func (h UserHandler) List(w http.ResponseWriter, r *http.Request) {
 	})
 	if err != nil {
 		h.Logger.Error("tasks list executeTemplate err", err)
-		http.Error(w, `tasks list template err`, http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf(`tasks list template err %s`, err), http.StatusInternalServerError)
 		return
 	}
 }

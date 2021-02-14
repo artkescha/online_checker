@@ -27,17 +27,17 @@ func NewRouter(userHandlers handlers.User, taskHandlers task_handlers.TaskHandle
 	//redirect user or admin
 	router.HandleFunc("/state", middlewares.Authorization(sessionManager, userHandlers.State)).Methods("GET")
 
-	//redirect to user
+	//redirect to user TODO maybe tasks (GET)
 	router.HandleFunc("/user", middlewares.Authorization(sessionManager, userHandlers.List)).Methods("GET")
 
-	//redirect to user
+	//redirect to user TODO maybe tasks (GET)
 	router.HandleFunc("/admin", taskHandlers.List).Methods("GET")
 
 	//task new
 	router.HandleFunc("/tasks/new", taskHandlers.CreateForm).Methods("GET")
 
 	//task new
-	router.HandleFunc("/tasks/new", taskHandlers.Create).Methods("POST")
+	router.HandleFunc("/tasks", taskHandlers.Create).Methods("POST")
 
 	//read one task
 	router.HandleFunc("/tasks/{id}", taskHandlers.ReadOne).Methods("GET")
@@ -46,12 +46,18 @@ func NewRouter(userHandlers handlers.User, taskHandlers task_handlers.TaskHandle
 	router.HandleFunc("/tasks/edit/{id}", taskHandlers.Edit).Methods("GET")
 
 	//updated
-	router.HandleFunc("/tasks/{id}", taskHandlers.Update).Methods("PATH")
+	router.HandleFunc("/tasks/{id}", taskHandlers.Update).Methods("POST")
+
+	//upload tests
+	router.HandleFunc("/tests/upload/{taskID}", taskHandlers.UploadTests).Methods("POST")
+
+	//download tests
+	router.HandleFunc("/tests/download/{taskID}", taskHandlers.DownloadTests).Methods("GET")
 
 	router.HandleFunc("/tasks/{id}", taskHandlers.Delete).Methods("DELETE")
 
 	//send solution {id - taskID}
-	router.HandleFunc("/tasks/solution/{id}", taskHandlers.SolutionForm).Methods("GET")
+	router.HandleFunc("/tasks/solution/{taskID}", taskHandlers.SolutionForm).Methods("GET")
 
 	//подключаем статику к форме login-а
 	router.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir("./web/user/template/"))))

@@ -13,7 +13,7 @@
 <div class="container">
     <h1>Edit item</h1>
 
-    <form method="post" action="/tasks/edit/{{.ID}}">
+    <form method="post" action="/tasks/{{.ID}}">
         <div class="form-group">
             <label for="title">Title</label>
             <input type="text" class="form-control" name="title" id="title" value="{{.Title}}">
@@ -24,6 +24,79 @@
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
+
+
+    <form method="post" enctype="multipart/form-data" id="fileUploadForm" >
+        <input type="file" class="mx-auto my-2 my-sm-3 col-xs-4" accept=".zip" name="myArch"/>
+        <div class="container-buttons">
+            <input type="submit" class="btn btn-dark" name="submit" value="upload tests *.zip archive" id="btnSubmit"/>
+    </form>
+
+
+    <span id="result"></span>
+
+    <form method="get"
+          enctype="multipart/form-data"
+          action="http://localhost:8080/tests/download/{{.ID}}">
+        <input type="submit" class="btn btn-dark" value="download tests *.zip archive"/>
+    </form>
 </div>
+
+</div>
+
+<style type="text/css">
+    .container-buttons {
+        display: flex;
+        justify-content: space-evenly;
+    }
+</style>
+
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
+
+<script>
+    $("#btnSubmit").click(function (event) {
+
+        //stop submit the form, we will post it manually.
+        event.preventDefault();
+
+        // Get form
+        var form = $('#fileUploadForm')[0];
+
+        // Create an FormData object
+        var data = new FormData(form);
+
+        // If you want to add an extra field for the FormData
+        data.append("CustomField", "This is some extra data, testing");
+
+        // disabled the submit button
+        $("#btnSubmit").prop("disabled", true);
+
+        $.ajax({
+            type: "POST",
+            enctype: 'multipart/form-data',
+            url: "http://localhost:8080/tests/upload/{{.ID}}",
+            data: data,
+            processData: false,
+            contentType: false,
+            cache: false,
+            timeout: 600000,
+            success: function (data) {
+                alert(data);
+                $("#btnSubmit").prop("disabled", false);
+
+            },
+            error: function (e) {
+                alert(e.responseText);
+                $("#btnSubmit").prop("disabled", false);
+
+            }
+        });
+
+    });
+
+</script>
 </body>
 </html>
+
+
