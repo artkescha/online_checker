@@ -1,15 +1,17 @@
 package router
 
 import (
-	"github.com/gorilla/mux"
 	"github.com/artkescha/grader/online_checker/pkg/middlewares"
 	"github.com/artkescha/grader/online_checker/pkg/session"
 	task_handlers "github.com/artkescha/grader/online_checker/web/task/handlers"
+	try_handlers "github.com/artkescha/grader/online_checker/web/try/handlers"
 	"github.com/artkescha/grader/online_checker/web/user/handlers"
+	"github.com/gorilla/mux"
 	"net/http"
 )
 
-func NewRouter(userHandlers handlers.User, taskHandlers task_handlers.TaskHandler, sessionManager session.Manager) *mux.Router {
+func NewRouter(userHandlers handlers.User, taskHandlers task_handlers.TaskHandler,
+	tryHandler try_handlers.SolutionHandler, sessionManager session.Manager) *mux.Router {
 	router := mux.NewRouter()
 
 	//регистрация пользователя
@@ -56,8 +58,11 @@ func NewRouter(userHandlers handlers.User, taskHandlers task_handlers.TaskHandle
 
 	router.HandleFunc("/tasks/{id}", taskHandlers.Delete).Methods("DELETE")
 
-	//send solution {id - taskID}
-	router.HandleFunc("/tasks/solution/{taskID}", taskHandlers.SolutionForm).Methods("GET")
+	//solution form {id - taskID}
+	router.HandleFunc("/tasks/solutionForm/{taskID}", taskHandlers.SolutionForm).Methods("GET")
+
+	//solution {id - taskID}
+	router.HandleFunc("/try", tryHandler.SendSolution).Methods("POST")
 
 	//подключаем статику к форме login-а
 	router.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir("./web/user/template/"))))

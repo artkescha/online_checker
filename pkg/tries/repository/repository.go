@@ -59,7 +59,7 @@ func (repo Repo) ListByUser(ctx context.Context, userID uint64, limit, offset ui
 	rows, err := repo.db.Query("SELECT * FROM tries WHERE user_id = $1 ORDER BY $2 DESC LIMIT $3 OFFSET $4",
 		userID, sortField, limit, offset)
 	if err != nil {
-		return []try.Try, fmt.Errorf("query tries list failed: %s", err)
+		return []try.Try{}, fmt.Errorf("query tries list failed: %s", err)
 	}
 	tries := make([]try.Try, 0)
 

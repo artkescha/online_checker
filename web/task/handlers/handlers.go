@@ -170,7 +170,7 @@ func (h TaskHandler) Delete(w http.ResponseWriter, r *http.Request) {
 
 func (h TaskHandler) SolutionForm(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	taskID, err := strconv.Atoi(vars["id"])
+	taskID, err := strconv.Atoi(vars["taskID"])
 	if err != nil {
 		http.Error(w, `bad id`, http.StatusBadRequest)
 		return

@@ -11,7 +11,9 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/schema v1.2.0
 	github.com/lib/pq v1.9.0
+	github.com/nats-io/nats.go v1.10.0
 	github.com/satori/go.uuid v1.2.0
 	go.uber.org/zap v1.16.0
 	golang.org/x/net v0.0.0-20210119194325-5f4716e94777
+	golang.org/x/tools v0.0.0-20191029190741-b9c20aec41a5
 )

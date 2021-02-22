@@ -2,15 +2,22 @@ package main
 
 import (
 	"database/sql"
-	"github.com/bradfitz/gomemcache/memcache"
-	_ "github.com/lib/pq"
 	"github.com/artkescha/grader/online_checker/pkg/middlewares"
 	"github.com/artkescha/grader/online_checker/pkg/session"
 	task_repo "github.com/artkescha/grader/online_checker/pkg/task/repository"
+	try_repo "github.com/artkescha/grader/online_checker/pkg/tries/repository"
 	user_repo "github.com/artkescha/grader/online_checker/pkg/user/repository"
+	"github.com/bradfitz/gomemcache/memcache"
+	_ "github.com/lib/pq"
+	"github.com/nats-io/nats.go"
+	"math"
+	"time"
+
+	"github.com/artkescha/grader/online_checker/pkg/tries/transmitter"
 	"github.com/artkescha/grader/online_checker/web/router"
 	"github.com/artkescha/grader/online_checker/web/server"
 	task_handlers "github.com/artkescha/grader/online_checker/web/task/handlers"
+	try_handler "github.com/artkescha/grader/online_checker/web/try/handlers"
 	"github.com/artkescha/grader/online_checker/web/user/handlers"
 	"go.uber.org/zap"
 	"html/template"
@@ -59,7 +66,7 @@ func main() {
 		Tmpl:      template.Must(template.ParseGlob("./web/user/template/*")),
 		UsersRepo: user_repo.NewUsersRepo(db),
 		//TODO дубль подумать использовать ли интерфейс!!!!!!!!!
-		TasksRepo: task_repo.NewTasksRepo(db),
+		TasksRepo:      task_repo.NewTasksRepo(db),
 		SessionManager: manager,
 		Logger:         logger,
 	}
@@ -72,7 +79,31 @@ func main() {
 		Logger:         logger,
 	}
 
-	router := router.NewRouter(userHandlers, taskHandlers, manager)
+	nc, err := nats.Connect(nats.DefaultURL,
+		nats.ReconnectWait(1*time.Minute),
+		nats.MaxReconnects(int(math.MaxUint32)),
+		nats.ReconnectHandler(func(nc *nats.Conn) {
+
+			zapLogger.Info("Got reconnected to ",
+				zap.String("host:", nc.ConnectedUrl()),
+			)
+		}))
+
+	if err != nil {
+		zapLogger.Error("nats connection",
+			zap.Error(err))
+		return
+	}
+
+	solutionHandler := try_handler.SolutionHandler{
+		TasksRepo: try_repo.NewTriesRepo(db),
+		//TODO дубль подумать использовать ли интерфейс!!!!!!!!!
+		SessionManager: manager,
+		Transmitter:    transmitter.New(nc),
+		Logger:         logger,
+	}
+
+	router := router.NewRouter(userHandlers, taskHandlers, solutionHandler, manager)
 
 	server.Start("0.0.0.0:"+port, router)
 }
