@@ -10,7 +10,6 @@ type Try struct {
 	UserID      int           `json:"user_id"`
 	Solution    string        `json:"solution"`
 	Status      status.Status `json:"status"`
-	Description string        `json:"description"`
 	Created     time.Time     `json:"created"`
 	TaskID      int           `json:"task_id"`
 	LanguageID  int           `json:"language_id"`

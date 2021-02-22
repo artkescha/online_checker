@@ -19,7 +19,7 @@ func New(natsConn *nats.Conn) *Publisher {
 }
 
 func (s *Publisher) Transmit(topic string, try try.Try) error {
-	data, err := json.Marshal(try)
+	data, err := json.Marshal(&try)
 
 	if err != nil {
 		return err

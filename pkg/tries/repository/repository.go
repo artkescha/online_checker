@@ -27,7 +27,7 @@ func (repo Repo) Insert(ctx context.Context, try try.Try) error {
 	var lastInsertId int64
 	var isExist = fmt.Errorf(`pq: duplicate key value violates unique constraint "constraint_name"`)
 	row := repo.db.QueryRow("INSERT INTO tasks(user_id, solution, status, description, task_id, language_id) VALUES($1, $2, $3, $4, $5, $6) returning id;",
-		try.UserID, try.Solution, try.Status, try.Description, try.TaskID, try.LanguageID)
+		try.UserID, try.Solution, try.Status, try.TaskID, try.LanguageID)
 	err := row.Scan(&lastInsertId)
 	if err != nil {
 		if err.Error() == isExist.Error() {

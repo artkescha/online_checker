@@ -15,10 +15,11 @@
 
     <form method="post" action="/try">
         <div class="form-group">
-            <label for="language">language ID</label>
-            <label for="language">{{.LanguageID}}</label>
-            <label for="language">task ID</label>
-            <label for="language">{{.TaskID}}</label>
+            <label for="task_id">Task ID</label>
+            <input class="form-control" name="task_id" id="task_id" value="{{.TaskID}}" readonly>
+            <label for="task_id">Language ID</label>
+            <input class="form-control" name="language_id" id="language_id" value="{{.LanguageID}}" readonly>
+
         </div>
         <div class="form-group">
             <label for="solution">Solution:</label>
@@ -26,6 +27,7 @@
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
+
 </div>
 </body>
 </html>

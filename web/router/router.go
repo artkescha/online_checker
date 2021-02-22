@@ -61,7 +61,6 @@ func NewRouter(userHandlers handlers.User, taskHandlers task_handlers.TaskHandle
 	//solution form {id - taskID}
 	router.HandleFunc("/tasks/solutionForm/{taskID}", taskHandlers.SolutionForm).Methods("GET")
 
-	//solution {id - taskID}
 	router.HandleFunc("/try", tryHandler.SendSolution).Methods("POST")
 
 	//подключаем статику к форме login-а
