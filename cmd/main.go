@@ -84,7 +84,7 @@ func main() {
 		nats.MaxReconnects(int(math.MaxUint32)),
 		nats.ReconnectHandler(func(nc *nats.Conn) {
 
-			zapLogger.Info("Got reconnected to ",
+			zapLogger.Info("got reconnected to ",
 				zap.String("host:", nc.ConnectedUrl()),
 			)
 		}))
