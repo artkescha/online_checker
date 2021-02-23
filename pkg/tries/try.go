@@ -6,11 +6,11 @@ import (
 )
 
 type Try struct {
-	ID          int           `json:"id"`
-	UserID      int           `json:"user_id"`
-	Solution    string        `json:"solution"`
-	Status      status.Status `json:"status"`
-	Created     time.Time     `json:"created"`
-	TaskID      int           `json:"task_id"`
-	LanguageID  int           `json:"language_id"`
+	ID         int           `json:"id,string"`
+	UserID     int64         `json:"user_id,string"`
+	Solution   string        `json:"solution"`
+	Status     status.Status `json:"status"`
+	Created    time.Time     `json:"created"`
+	TaskID     int           `json:"task_id,string"`
+	LanguageID int           `json:"language_id,string"`
 }

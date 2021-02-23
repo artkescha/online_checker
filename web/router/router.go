@@ -12,6 +12,7 @@ import (
 
 func NewRouter(userHandlers handlers.User, taskHandlers task_handlers.TaskHandler,
 	tryHandler try_handlers.SolutionHandler, sessionManager session.Manager) *mux.Router {
+
 	router := mux.NewRouter()
 
 	//регистрация пользователя
@@ -27,13 +28,13 @@ func NewRouter(userHandlers handlers.User, taskHandlers task_handlers.TaskHandle
 	router.HandleFunc("/registerForm", userHandlers.RegisterForm).Methods("GET")
 
 	//redirect user or admin
-	router.HandleFunc("/state", middlewares.Authorization(sessionManager, userHandlers.State)).Methods("GET")
+	router.HandleFunc("/state", userHandlers.State).Methods("GET")
 
 	//redirect to user TODO maybe tasks (GET)
 	router.HandleFunc("/user", middlewares.Authorization(sessionManager, userHandlers.List)).Methods("GET")
 
 	//redirect to user TODO maybe tasks (GET)
-	router.HandleFunc("/admin", taskHandlers.List).Methods("GET")
+	router.HandleFunc("/admin", middlewares.Authorization(sessionManager, taskHandlers.List)).Methods("GET")
 
 	//task new
 	router.HandleFunc("/tasks/new", taskHandlers.CreateForm).Methods("GET")
@@ -61,7 +62,8 @@ func NewRouter(userHandlers handlers.User, taskHandlers task_handlers.TaskHandle
 	//solution form {id - taskID}
 	router.HandleFunc("/tasks/solutionForm/{taskID}", taskHandlers.SolutionForm).Methods("GET")
 
-	router.HandleFunc("/try", tryHandler.SendSolution).Methods("POST")
+	//send solution
+	router.HandleFunc("/try", middlewares.Authorization(sessionManager, tryHandler.SendSolution)).Methods("POST")
 
 	//подключаем статику к форме login-а
 	router.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir("./web/user/template/"))))

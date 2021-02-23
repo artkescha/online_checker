@@ -2,12 +2,12 @@ package session
 
 import (
 	"fmt"
+	"github.com/artkescha/grader/online_checker/pkg/user"
 	"github.com/bradfitz/gomemcache/memcache"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/satori/go.uuid"
-	"github.com/artkescha/grader/online_checker/pkg/user"
-	//"os"
 	"reflect"
+
 	"strconv"
 )
 

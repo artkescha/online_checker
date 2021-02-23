@@ -22,7 +22,7 @@ func Authorization(manager session.Manager, next http.HandlerFunc) http.HandlerF
 			response.WriteError(w, http.StatusInternalServerError, err)
 			return
 		}
-		ctx := context.WithValue(r.Context(), ContextSession, session)
+		ctx := context.WithValue(r.Context(), ContextSession, session.User)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

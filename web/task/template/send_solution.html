@@ -13,7 +13,7 @@
 <div class="container">
     <h1>Send your solution</h1>
 
-    <form method="post" action="/try">
+    <form id="solution" method="post" action="/try">
         <div class="form-group">
             <label for="task_id">Task ID</label>
             <input class="form-control" name="task_id" id="task_id" value="{{.TaskID}}" readonly>
@@ -25,9 +25,66 @@
             <label for="solution">Solution:</label>
             <textarea class="form-control" name="solution" id="solution" rows="3"></textarea>
         </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" class="btn btn-primary" id="send_solution">Submit</button>
     </form>
 
 </div>
+
+
+<script type="text/javascript">
+
+    document.getElementById('solution').addEventListener('submit', submitForm);
+
+    function submitForm(event) {
+        // Отменяем стандартное поведение браузера с отправкой формы
+        event.preventDefault();
+
+        // event.target — это HTML-элемент form
+        let formData = new FormData(event.target);
+
+        // Собираем данные формы в объект
+        let obj = {};
+        formData.forEach((value, key) => obj[key] = value);
+
+        var cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)online_checker\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+
+        console.log(cookieValue);
+
+        // Собираем запрос к серверу
+        let request = new Request(event.target.action, {
+            method: 'POST',
+            body: JSON.stringify(obj),
+            headers: {
+                'Authorization':'Bearer ' + cookieValue,
+                'Content-Type': 'application/json',
+            },
+        });
+
+        // Отправляем (асинхронно!)
+        fetch(request).then(
+                function(response) {
+                    // Запрос успешно выполнен
+                    alert('solution send successful');
+                },
+                function(error) {
+                    // Запрос не получилось отправить
+                    alert('solution send failed: ' + error);
+                }
+        );
+    }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
 </body>
 </html>

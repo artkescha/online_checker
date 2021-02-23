@@ -5,8 +5,9 @@ import (
 	"github.com/artkescha/grader/online_checker/pkg/tries"
 	"github.com/artkescha/grader/online_checker/pkg/tries/repository"
 	"github.com/artkescha/grader/online_checker/pkg/tries/transmitter"
+	"github.com/artkescha/grader/online_checker/web/request"
 	"github.com/artkescha/grader/online_checker/web/response"
-	"github.com/gorilla/schema"
+	"log"
 	"time"
 
 	"go.uber.org/zap"
@@ -25,16 +26,22 @@ type SolutionHandler struct {
 }
 
 func (h SolutionHandler) SendSolution(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
-	try := try.Try{}
-	decoder := schema.NewDecoder()
-	decoder.IgnoreUnknownKeys(true)
-	err := decoder.Decode(&try, r.PostForm)
+	var try try.Try
+	err := request.DecodePostParams(&try, r)
 	if err != nil {
-		http.Error(w, `send solution bad form`, http.StatusBadRequest)
+		response.WriteError(w, http.StatusBadRequest, err)
 		return
 	}
+	user, err := request.ExtractContext(r)
+	if err != nil {
+		response.WriteError(w, http.StatusUnauthorized, err)
+		return
+	}
+
 	try.Created = time.Now()
+	try.UserID = user.ID
+
+	log.Printf("try: %v", try)
 
 	err = h.Transmitter.Transmit("solution", try)
 	if err != nil {
