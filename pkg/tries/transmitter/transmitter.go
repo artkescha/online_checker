@@ -1,13 +1,14 @@
 package transmitter
 
 import (
-	"encoding/json"
-	"github.com/artkescha/grader/online_checker/pkg/tries"
+	"github.com/artkescha/grader_api/queue_processor"
+	"github.com/golang/protobuf/proto"
+
 	"github.com/nats-io/nats.go"
 )
 
 type Transmitter interface {
-	Transmit(topic string, try try.Try) error
+	Transmit(topic string, try send_solution.Try) error
 }
 
 type Publisher struct {
@@ -18,8 +19,8 @@ func New(natsConn *nats.Conn) *Publisher {
 	return &Publisher{natsConn: natsConn}
 }
 
-func (s *Publisher) Transmit(topic string, try try.Try) error {
-	data, err := json.Marshal(&try)
+func (s *Publisher) Transmit(topic string, try send_solution.Try) error {
+	data, err := proto.Marshal(&try)
 
 	if err != nil {
 		return err

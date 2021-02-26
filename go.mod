@@ -4,10 +4,12 @@ go 1.13
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.0
+	github.com/artkescha/grader_api v0.0.0-20210226111954-8ac17c70959f
 	github.com/asaskevich/govalidator v0.0.0-20200907205600-7a23bdc65eef
 	github.com/bradfitz/gomemcache v0.0.0-20190913173617-a41fca850d0b
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/golang/mock v1.4.4
+	github.com/golang/protobuf v1.4.3
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/schema v1.2.0
 	github.com/lib/pq v1.9.0

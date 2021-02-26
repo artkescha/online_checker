@@ -7,6 +7,7 @@ import (
 	"github.com/artkescha/grader/online_checker/pkg/tries/transmitter"
 	"github.com/artkescha/grader/online_checker/web/request"
 	"github.com/artkescha/grader/online_checker/web/response"
+	"github.com/artkescha/grader_api/queue_processor"
 	"log"
 	"time"
 
@@ -43,7 +44,15 @@ func (h SolutionHandler) SendSolution(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("try: %v", try)
 
-	err = h.Transmitter.Transmit("solution", try)
+	apiTry := send_solution.Try{
+		UserId:uint64(user.ID),
+		Solution:try.Solution,
+		Timestamp:time.Now().Unix(),
+		TaskId: int32(try.TaskID),
+		LanguageId: int32(try.LanguageID),
+	}
+
+	err = h.Transmitter.Transmit("solution", apiTry)
 	if err != nil {
 		h.Logger.Error("solution transmit failed", zap.Error(err))
 		http.Error(w, `{"error": "publish to broker failed"}`, http.StatusInternalServerError)
