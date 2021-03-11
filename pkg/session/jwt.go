@@ -3,7 +3,7 @@ package session
 import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
-	"github.com/artkescha/grader/online_checker/pkg/user"
+	"github.com/artkescha/checker/online_checker/pkg/user"
 	"time"
 )
 

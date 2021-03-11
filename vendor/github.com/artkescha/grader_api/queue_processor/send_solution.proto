@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package send_solution;
+
+message Try {
+   uint64 user_id = 1;
+   string solution = 2;
+   int64 timestamp = 3;
+   int32 task_id = 4;
+   int32 language_id = 5;
+}

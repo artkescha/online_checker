@@ -7,7 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"github.com/artkescha/grader/online_checker/pkg/kit"
+	"github.com/artkescha/checker/online_checker/pkg/kit"
 )
 
 type UnZipper interface {

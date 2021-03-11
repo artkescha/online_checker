@@ -6,7 +6,7 @@ import (
 	"mime/multipart"
 	"os"
 	"path/filepath"
-	"github.com/artkescha/grader/online_checker/pkg/kit"
+	"github.com/artkescha/checker/online_checker/pkg/kit"
 )
 
 type FileStorage interface {

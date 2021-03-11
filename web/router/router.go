@@ -1,11 +1,11 @@
 package router
 
 import (
-	"github.com/artkescha/grader/online_checker/pkg/middlewares"
-	"github.com/artkescha/grader/online_checker/pkg/session"
-	task_handlers "github.com/artkescha/grader/online_checker/web/task/handlers"
-	try_handlers "github.com/artkescha/grader/online_checker/web/try/handlers"
-	"github.com/artkescha/grader/online_checker/web/user/handlers"
+	"github.com/artkescha/checker/online_checker/pkg/middlewares"
+	"github.com/artkescha/checker/online_checker/pkg/session"
+	task_handlers "github.com/artkescha/checker/online_checker/web/task/handlers"
+	try_handlers "github.com/artkescha/checker/online_checker/web/try/handlers"
+	"github.com/artkescha/checker/online_checker/web/user/handlers"
 	"github.com/gorilla/mux"
 	"net/http"
 )

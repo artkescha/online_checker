@@ -1,12 +1,12 @@
 package handlers
 
 import (
-	"github.com/artkescha/grader/online_checker/pkg/session"
-	"github.com/artkescha/grader/online_checker/pkg/tries"
-	"github.com/artkescha/grader/online_checker/pkg/tries/repository"
-	"github.com/artkescha/grader/online_checker/pkg/tries/transmitter"
-	"github.com/artkescha/grader/online_checker/web/request"
-	"github.com/artkescha/grader/online_checker/web/response"
+	"github.com/artkescha/checker/online_checker/pkg/session"
+	"github.com/artkescha/checker/online_checker/pkg/tries"
+	"github.com/artkescha/checker/online_checker/pkg/tries/repository"
+	"github.com/artkescha/checker/online_checker/pkg/tries/transmitter"
+	"github.com/artkescha/checker/online_checker/web/request"
+	"github.com/artkescha/checker/online_checker/web/response"
 	"github.com/artkescha/grader_api/queue_processor"
 	"log"
 	"time"

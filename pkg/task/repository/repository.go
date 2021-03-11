@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"github.com/artkescha/grader/online_checker/pkg/task"
+	"github.com/artkescha/checker/online_checker/pkg/task"
 )
 
 type TaskRepo interface {

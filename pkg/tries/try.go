@@ -1,7 +1,7 @@
 package try
 
 import (
-	"github.com/artkescha/grader/online_checker/pkg/tries/status"
+	"github.com/artkescha/checker/online_checker/pkg/tries/status"
 	"time"
 )
 

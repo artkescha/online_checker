@@ -2,8 +2,8 @@ package request
 
 import (
 	"errors"
-	"github.com/artkescha/grader/online_checker/pkg/middlewares"
-	"github.com/artkescha/grader/online_checker/pkg/user"
+	"github.com/artkescha/checker/online_checker/pkg/middlewares"
+	"github.com/artkescha/checker/online_checker/pkg/user"
 	"net/http"
 )
 

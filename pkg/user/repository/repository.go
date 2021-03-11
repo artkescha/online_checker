@@ -3,7 +3,7 @@ package repository
 import (
 	"database/sql"
 	"fmt"
-	"github.com/artkescha/grader/online_checker/pkg/user"
+	"github.com/artkescha/checker/online_checker/pkg/user"
 )
 
 //go:generate mockgen -destination=./repository_mock.go -package=repository . UserRepo

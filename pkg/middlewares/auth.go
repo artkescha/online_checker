@@ -1,8 +1,8 @@
 package middlewares
 
 import (
-	"github.com/artkescha/grader/online_checker/pkg/session"
-	"github.com/artkescha/grader/online_checker/web/response"
+	"github.com/artkescha/checker/online_checker/pkg/session"
+	"github.com/artkescha/checker/online_checker/web/response"
 	"golang.org/x/net/context"
 	"net/http"
 	"strings"

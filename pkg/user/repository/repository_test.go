@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/artkescha/grader/online_checker/pkg/user"
+	"github.com/artkescha/checker/online_checker/pkg/user"
 )
 
 func TestRepo_Insert(t *testing.T) {
