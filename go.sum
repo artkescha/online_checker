@@ -1,8 +1,8 @@
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/DATA-DOG/go-sqlmock v1.5.0 h1:Shsta01QNfFxHCfpW6YH2STWB0MudeXXEWMr20OEh60=
 github.com/DATA-DOG/go-sqlmock v1.5.0/go.mod h1:f/Ixk793poVmq4qj/V1dPUg2JEAKC73Q5eFN3EC/SaM=
-github.com/artkescha/grader_api v0.0.0-20210226111954-8ac17c70959f h1:IdGKZUz2wE2c7ea3HMX/3+4I2LmD8xOBfqUqY3GI+90=
-github.com/artkescha/grader_api v0.0.0-20210226111954-8ac17c70959f/go.mod h1:5yB4vtufOJyzSXvRQcKBEQrdeAYSbsWYpzbhTC2Az2Y=
+github.com/artkescha/grader_api v0.0.0-20210314202610-6444f213a0ec h1:T881DO2HptC+AzX+yds+7ED6vCzkNZuZgDvzCBX5F9Q=
+github.com/artkescha/grader_api v0.0.0-20210314202610-6444f213a0ec/go.mod h1:5yB4vtufOJyzSXvRQcKBEQrdeAYSbsWYpzbhTC2Az2Y=
 github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d h1:Byv0BzEl3/e6D5CLfI0j/7hiIEtvGVFPCZ7Ei2oq8iQ=
 github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d/go.mod h1:WaHUgvxTVq04UNunO+XhnAqY/wQc+bxr74GqbsZ/Jqw=
 github.com/bradfitz/gomemcache v0.0.0-20190913173617-a41fca850d0b h1:L/QXpzIa3pOvUGt1D1lA5KjYhPBAN/3iWdP7xeFS9F0=

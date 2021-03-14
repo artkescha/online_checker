@@ -95,7 +95,7 @@ func TestRepo_GetUserByLogin(t *testing.T) {
 				ID:       1,
 				Name:     "artem",
 				Password: user.GetMD5Password("12345678"),
-				RoleID:2,
+				RoleID:   2,
 			},
 			wantErr: false,
 		},

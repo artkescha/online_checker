@@ -2,11 +2,11 @@ package fileStorage
 
 import (
 	"fmt"
+	"github.com/artkescha/checker/online_checker/pkg/kit"
 	"io/ioutil"
 	"mime/multipart"
 	"os"
 	"path/filepath"
-	"github.com/artkescha/checker/online_checker/pkg/kit"
 )
 
 type FileStorage interface {
@@ -20,7 +20,7 @@ func New(tempFolder, target string) (*fileStorage, error) {
 			fmt.Printf("create path %s failed %s", target, err)
 		}
 	}
-	return &fileStorage{targetPath: target, tempFolder:tempFolder}, nil
+	return &fileStorage{targetPath: target, tempFolder: tempFolder}, nil
 
 }
 

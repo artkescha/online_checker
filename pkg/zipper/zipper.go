@@ -19,8 +19,8 @@ type zipper struct {
 	w        *zip.Writer
 }
 
-func New(targetPath,filePrefix string) (Zipper, error) {
-	tmpFile, err := ioutil.TempFile(targetPath, "*" + filePrefix)
+func New(targetPath, filePrefix string) (Zipper, error) {
+	tmpFile, err := ioutil.TempFile(targetPath, "*"+filePrefix)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create file for archive: %s", err)
 	}

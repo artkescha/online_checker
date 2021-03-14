@@ -2,8 +2,8 @@ package session
 
 import (
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
 	"github.com/artkescha/checker/online_checker/pkg/user"
+	"github.com/dgrijalva/jwt-go"
 	"time"
 )
 

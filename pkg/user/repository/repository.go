@@ -41,7 +41,7 @@ func (repo *Repo) Insert(login string, password string) (*user.User, error) {
 		ID:       lastInsertId,
 		Name:     login,
 		Password: password,
-		RoleID:roleID,
+		RoleID:   roleID,
 	}
 
 	return user, nil

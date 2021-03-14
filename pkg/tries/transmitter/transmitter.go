@@ -1,7 +1,7 @@
 package transmitter
 
 import (
-	"github.com/artkescha/grader_api/queue_processor"
+	"github.com/artkescha/grader_api/send_solution"
 	"github.com/golang/protobuf/proto"
 
 	"github.com/nats-io/nats.go"

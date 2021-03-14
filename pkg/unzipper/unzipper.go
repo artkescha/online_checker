@@ -3,18 +3,18 @@ package unzipper
 import (
 	"archive/zip"
 	"fmt"
+	"github.com/artkescha/checker/online_checker/pkg/kit"
 	"io"
 	"os"
 	"path/filepath"
 	"strings"
-	"github.com/artkescha/checker/online_checker/pkg/kit"
 )
 
 type UnZipper interface {
 	Unzip(src string, dest string, fileExpansiones []string) error
 }
 
-type unzipper struct {}
+type unzipper struct{}
 
 func New() UnZipper {
 	return &unzipper{}
