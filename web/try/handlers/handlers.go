@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"github.com/artkescha/checker/online_checker/pkg/session"
 	"github.com/artkescha/checker/online_checker/pkg/tries"
 	"github.com/artkescha/checker/online_checker/pkg/tries/repository"
@@ -8,19 +9,25 @@ import (
 	"github.com/artkescha/checker/online_checker/web/request"
 	"github.com/artkescha/checker/online_checker/web/response"
 	"github.com/artkescha/grader_api/send_solution"
-	"log"
-	"time"
 
+	"github.com/gorilla/mux"
 	"go.uber.org/zap"
+	"html/template"
+	"log"
 	"net/http"
+	"strconv"
+	"time"
 )
 
 type Solutioner interface {
 	SendSolution(w http.ResponseWriter, r *http.Request)
+	ListByUserID(w http.ResponseWriter, r *http.Request)
+	ReadOneTry(w http.ResponseWriter, r *http.Request)
 }
 
 type SolutionHandler struct {
-	TasksRepo      repository.TriesRepo
+	Tmpl           *template.Template
+	TriesRepo      repository.TriesRepo
 	SessionManager session.Manager
 	Transmitter    transmitter.Transmitter
 	Logger         *zap.SugaredLogger
@@ -58,6 +65,65 @@ func (h SolutionHandler) SendSolution(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, `{"error": "publish to broker failed"}`, http.StatusInternalServerError)
 		return
 	}
+	//http.Redirect(w, r, target, http.StatusFound)
 
-	response.WriteResponse(w, http.StatusOK, true, "success")
+	//log.Printf("redirect tries!!!!!!!\n")
+
+	//TODO UserID
+	//http.Redirect(w, r, "/tries?userID="+"1", http.StatusSeeOther)
+	//http.Redirect(w, r, "/tries/1", http.StatusSeeOther)
+	//http.Redirect(w, r,"/tries/1", http.StatusSeeOther)
+
+	//log.Printf("redirect tries!!!!!!!\n")
+
+	http.Redirect(w, r, fmt.Sprintf("/tries/userID/%d", user.ID), http.StatusSeeOther)
+	//http.Redirect(w, r, r.Header.Get("Referer"), 302)
+
+	//response.WriteResponse(w, http.StatusOK, true, "success")
+}
+
+func (h SolutionHandler) ListByUserID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	userID, err := strconv.Atoi(vars["userID"])
+	if err != nil {
+		h.Logger.Errorf("extract request params failed: %s", err)
+		http.Error(w, fmt.Sprintf(`userID not found %s`, err), http.StatusInternalServerError)
+		return
+	}
+	triesByUser, err := h.TriesRepo.ListByUser(r.Context(), uint64(userID), 100, 0)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	h.Logger.Info("triesByUser: %+v", triesByUser)
+	err = h.Tmpl.ExecuteTemplate(w, "list.html", struct {
+		Tries []try.Try
+	}{
+		Tries: triesByUser,
+	})
+	if err != nil {
+		http.Error(w, fmt.Sprintf(`tries template err`), http.StatusInternalServerError)
+		return
+	}
+}
+
+func (h SolutionHandler) ReadOneTry(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, err := strconv.Atoi(vars["ID"])
+	if err != nil {
+		h.Logger.Errorf("extract request params failed: %s", err)
+		http.Error(w, fmt.Sprintf(`try id not found in request params %s`, err), http.StatusInternalServerError)
+		return
+	}
+	try, err := h.TriesRepo.GetByID(r.Context(), uint64(id))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	h.Logger.Info("try with id: %d", id, try)
+	err = h.Tmpl.ExecuteTemplate(w, "try.html", try)
+	if err != nil {
+		http.Error(w, fmt.Sprintf(`try template err`), http.StatusInternalServerError)
+		return
+	}
 }

@@ -229,10 +229,12 @@ func (h TaskHandler) UploadTests(w http.ResponseWriter, r *http.Request) {
 	h.Logger.Debugf("File Size: %+v\n", handler.Size)
 	h.Logger.Debugf("MIME Header: %+v\n", handler.Header)
 
-	rootPath := "../tests/"
+	rootPath := "/home/artyom/solutions/tests"
+	tempPath := "/home/artyom/temp-zip"
+	//tempPath := "../temp-zip"
 
 	//make rootPath
-	fStorage, err := fileStorage.New("../temp-zip", rootPath)
+	fStorage, err := fileStorage.New(tempPath, rootPath)
 
 	if err != nil {
 		uploadError = err
@@ -240,7 +242,7 @@ func (h TaskHandler) UploadTests(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tempPath, err := fStorage.UploadFile(file)
+	tempZipPath, err := fStorage.UploadFile(file)
 	//required!!
 	file.Close()
 
@@ -260,10 +262,12 @@ func (h TaskHandler) UploadTests(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	if err := unzpr.Unzip(tempPath, path, []string{".in", ".out"}); err != nil {
+	if err := unzpr.Unzip(tempZipPath, path, []string{".in", ".out"}); err != nil {
 		uploadError = err
 		h.Logger.Errorf("upload file failed, unzip archive failed %s", err)
 	}
+	h.Logger.Info(tempZipPath)
+	h.Logger.Info(path)
 }
 
 func (h TaskHandler) DownloadTests(w http.ResponseWriter, r *http.Request) {

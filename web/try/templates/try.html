@@ -11,21 +11,24 @@
 <body>
 
 <div class="container">
-    <h1>Send your solution</h1>
+    <h1>Your solution</h1>
 
     <form id="solution" method="post" action="/try">
         <div class="form-group">
+
             <label for="task_id">Task ID</label>
             <input class="form-control" name="task_id" id="task_id" value="{{.TaskID}}" readonly>
             <label for="task_id">Language ID</label>
             <input class="form-control" name="language_id" id="language_id" value="{{.LanguageID}}" readonly>
 
+            <label for="status">Status</label>
+            <input class="form-control" name="status" id="status" value={{.Status}} readonly>
         </div>
         <div class="form-group">
             <label for="solution">Solution:</label>
-            <textarea class="form-control" name="solution" id="solution" rows="3"></textarea>
+            <textarea class="form-control" name="solution" id="solution" rows="20">{{.Solution}}</textarea>
         </div>
-        <button type="submit" class="btn btn-primary" id="send_solution">Send Solution</button>
+        <button type="submit" class="btn btn-primary" id="send_solution">Re Send Solution</button>
     </form>
 
 </div>
@@ -81,13 +84,13 @@
                     return res.text();
                 })
                 .then(data => {
-                    alert('solution send successfully!');
-                    $('html').html(data);
-                },
-                (error) => {
-            // Запрос не получилось отправить
-            alert('solution send failed: ' + error);
-        }
+                            alert('solution send successfully!');
+                            $('html').html(data);
+                        },
+                        (error) => {
+                            // Запрос не получилось отправить
+                            alert('solution send failed: ' + error);
+                        }
                 );
     }
 </script>

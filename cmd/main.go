@@ -96,7 +96,8 @@ func main() {
 	}
 
 	solutionHandler := try_handler.SolutionHandler{
-		TasksRepo: try_repo.NewTriesRepo(db),
+		Tmpl:      template.Must(template.ParseGlob("./web/try/templates/*")),
+		TriesRepo: try_repo.NewTriesRepo(db),
 		//TODO дубль подумать использовать ли интерфейс!!!!!!!!!
 		SessionManager: manager,
 		Transmitter:    transmitter.New(nc),

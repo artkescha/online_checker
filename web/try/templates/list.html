@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta http-equiv="Cache-control" content="no-cache">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="-1">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+</head>
+<body>
+<div class="container">
+    <h1>Your Tries</h1>
+    <table class="table">
+
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Solution</th>
+            <th>Status</th>
+            <th>Description</th>
+            <th>Created</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        {{range .Tries}}
+        <tr>
+            <td>{{.ID}}</td>
+            <td><a href="/try/{{.ID}}" class="do-click btn btn-primary">See solution</a></td>
+            <td>{{.Status}}</td>
+            <td>{{.Description}}</td>
+            <td>{{.Created}}</td>
+        </tr>
+        {{end}}
+        </tbody>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
+
+<script type="text/javascript">
+
+    $('.do-click').click(function() {
+        if(!confirm("Are you sure?")) {
+            return
+        }
+
+        var cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)online_checker\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+
+        console.log(cookieValue);
+
+        $elem = $(this)
+        $.ajax({
+            url: '/try/' + $elem.data("id"),
+            type: 'GET',
+            data: {},
+            headers: {
+                'Authorization':'Bearer ' + cookieValue,
+                'Content-Type': 'application/json',
+            },
+            success: function(resp) {},
+        });
+    })
+</script>
+
+</body>
+</html>

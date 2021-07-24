@@ -38,7 +38,7 @@ func FilePathWalkDir(root string, expansiones []string) ([]string, error) {
 
 func IsAllowedExtension(extension string, allowedExtensiones []string) bool {
 	for _, allowedExtension := range allowedExtensiones {
-		if allowedExtension == extension {
+		if allowedExtension != extension {
 			return true
 		}
 	}
