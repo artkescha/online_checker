@@ -31,10 +31,10 @@ func NewRouter(userHandlers handlers.User, taskHandlers task_handlers.TaskHandle
 	router.HandleFunc("/state", userHandlers.State).Methods("GET")
 
 	//redirect to user TODO maybe tasks (GET)
-	router.HandleFunc("/user", /*middlewares.Authorization(sessionManager,*/ userHandlers.List/*)*/).Methods("GET")
+	router.HandleFunc("/user", middlewares.Authorization(sessionManager, userHandlers.List)).Methods("GET")
 
 	//redirect to user TODO maybe tasks (GET)
-	router.HandleFunc("/admin", /*middlewares.Authorization(sessionManager, */taskHandlers.List/*)*/).Methods("GET")
+	router.HandleFunc("/admin", middlewares.Authorization(sessionManager, taskHandlers.List)).Methods("GET")
 
 	//task new
 	router.HandleFunc("/tasks/new", taskHandlers.CreateForm).Methods("GET")
@@ -60,7 +60,7 @@ func NewRouter(userHandlers handlers.User, taskHandlers task_handlers.TaskHandle
 	router.HandleFunc("/tasks/{id}", taskHandlers.Delete).Methods("DELETE")
 
 	//solution form {id - taskID}
-	router.HandleFunc("/tasks/solutionForm/{taskID}", taskHandlers.SolutionForm).Methods("GET")
+	router.HandleFunc("/tasks/solutionForm/{taskID}" /*middlewares.Authorization(sessionManager, */, taskHandlers.SolutionForm /*)*/).Methods("POST")
 
 	//send solution
 	router.HandleFunc("/try", middlewares.Authorization(sessionManager, tryHandler.SendSolution)).Methods("POST")
@@ -69,7 +69,7 @@ func NewRouter(userHandlers handlers.User, taskHandlers task_handlers.TaskHandle
 	router.HandleFunc("/try/{ID}", tryHandler.ReadOneTry).Methods("GET")
 
 	//get tries by user
-	router.HandleFunc("/tries/userID/{userID}", tryHandler.ListByUserID).Methods("GET")
+	router.HandleFunc("/tries/userID/{userID}", middlewares.Authorization(sessionManager, tryHandler.ListByUserID)).Methods("GET")
 
 	//подключаем статику к форме login-а
 	router.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir("./web/user/template/"))))

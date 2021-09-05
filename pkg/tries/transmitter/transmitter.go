@@ -27,7 +27,6 @@ func (s *Publisher) Transmit(topic string, try send_solution.Try) error {
 	}
 
 	err = s.natsConn.Publish(topic, data)
-
 	if err != nil {
 		return err
 	}

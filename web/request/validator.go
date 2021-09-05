@@ -9,6 +9,9 @@ import (
 
 func DecodePostParams(value interface{}, r *http.Request) error {
 	defer r.Body.Close()
+	//p:= make([]byte, 10000)
+	//r.Body.Read(p)
+	//log.Printf("!!!!!!!!!!!!%v", string(p))
 	if err := json.NewDecoder(r.Body).Decode(value); err != nil {
 		return fmt.Errorf("decode request params failed: %s", err)
 	}

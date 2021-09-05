@@ -23,6 +23,7 @@
 
             <label for="status">Status</label>
             <input class="form-control" name="status" id="status" value={{.Status}} readonly>
+            <input class="form-control" name="user_id" id="user_id" type="hidden" value="{{.UserID}}" readonly>
         </div>
         <div class="form-group">
             <label for="solution">Solution:</label>
@@ -66,32 +67,49 @@
             },
         });
 
-        // Вернуть все попытки по юзеру
-        /*let allTriesByUser = new Request(event.target.action, {
-            url: '/tries/{userID}',
-            method: 'Get',
-            body: JSON.stringify(obj),
-            headers: {
-                'Authorization':'Bearer ' + cookieValue,
-                'Content-Type': 'application/json',
-            },
-        });*/
-
-
         // Отправляем (асинхронно!)
         fetch(request).then(
-                (res)  => {
-                    return res.text();
+                (response)  => {
+                    if (response.status === 401){
+                        window.location.href="/";
+                        return Promise.reject(response);
+                    }
+                    return response.text();
                 })
                 .then(data => {
-                            alert('solution send successfully!');
-                            $('html').html(data);
+                            //alert('solution send successfully!');
+                            let user_id = document.getElementById("user_id").value;
+                            //window.location.href="/tries/userID/" + user_id;
+                            sendRequest("GET", "/tries/userID/" + user_id, null)
                         },
                         (error) => {
                             // Запрос не получилось отправить
-                            alert('solution send failed: ' + error);
+                            alert('solution send failed: ' + error.toString());
                         }
                 );
+    }
+
+    function sendRequest(method, url, data) {
+
+        var cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)online_checker\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+
+        let xhr = new XMLHttpRequest();
+        xhr.open(method, url, false);
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhr.setRequestHeader("Authorization", 'Bearer ' + cookieValue);
+        xhr.onreadystatechange = function () {
+            if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+
+                $('html').html(xhr.responseText);
+                window.history.pushState("", "", url);
+            }
+        };
+        xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+        if (data != null) {
+            xhr.send(JSON.stringify(data));
+        } else {
+            xhr.send();
+        }
     }
 </script>
 </body>

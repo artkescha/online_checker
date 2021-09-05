@@ -13,12 +13,13 @@
 <div class="container">
     <h1>Send your solution</h1>
 
-    <form id="solution" method="post" action="/try">
+    <form name="myForm" id="myForm">
         <div class="form-group">
             <label for="task_id">Task ID</label>
             <input class="form-control" name="task_id" id="task_id" value="{{.TaskID}}" readonly>
             <label for="task_id">Language ID</label>
             <input class="form-control" name="language_id" id="language_id" value="{{.LanguageID}}" readonly>
+            <input class="form-control" name="user_id" id="user_id" type="hidden" value="{{.UserID}}" readonly>
 
         </div>
         <div class="form-group">
@@ -35,60 +36,164 @@
 
 <script type="text/javascript">
 
+    /*window.onload = function() {
 
-    document.getElementById('solution').addEventListener('submit', submitForm);
+        document.getElementById("my-form").addEventListener('submit', submitForm);
 
-    function submitForm(event) {
-        // Отменяем стандартное поведение браузера с отправкой формы
-        event.preventDefault();
+        function submitForm(event) {
+            // Отменяем стандартное поведение браузера с отправкой формы
+            event.preventDefault();
+            //const formData = new URLSearchParams(new FormData(this));
+            //console.log(formData);
+
+            // event.target — это HTML-элемент form
+            let formData = new FormData(event.target);
+
+            // Собираем данные формы в объект
+            let obj = {};
+            formData.forEach((value, key) => obj[key] = value);
+
+            var cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)online_checker\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+
+            console.log(cookieValue);
+            console.log(JSON.stringify(obj));
+
+            // Собираем запрос к серверу
+            let request = new Request(event.target.action, {
+                url: '/try',
+                method: 'POST',
+                body: JSON.stringify(obj),
+                headers: {
+                    'Authorization': 'Bearer ' + cookieValue,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            // Отправляем (асинхронно!)
+            fetch(request).then(
+                    (response) => {
+                        if (response.status === 401){
+                            window.location.href="/";
+                            return Promise.reject(response);
+                        }
+                        return response.text();
+                    })
+                    .then(data => {
+
+                                alert('solution send successfully!');
+                                let user_id = document.getElementById("user_id").value;
+
+
+
+
+                                // Собираем запрос к серверу
+                                let request_2 = new Request(event.target.action, {
+                                    url: '/tries/userID/64',
+                                    method: 'GET',
+                                    headers: {
+                                        'Authorization': 'Bearer ' + cookieValue,
+                                        'Content-Type': 'application/json',
+                                    },
+                                });
+
+
+                                // Отправляем (асинхронно!)
+                                fetch(request_2).then(
+                                        (response) => {
+                                            if (response.status === 401){
+                                                window.location.href="/";
+                                                return Promise.reject(response);
+                                            }
+                                            return response.text();
+                                        })
+                                        .then(data => {
+
+                                                },
+                                                (error) => {
+                                                    // Запрос не получилось отправить
+                                                    alert('solution send failed: ' + error.toString());
+                                                }
+                                        );
+
+
+
+
+
+                                //window.location.href="/tries/userID/" + user_id;
+                            },
+                            (error) => {
+                                // Запрос не получилось отправить
+                                alert('solution send failed: ' + error.toString());
+                            }
+                    );
+        }
+    }*/
+    window.onload = function() {
+    document.myForm.onsubmit = function() {
+
+        let form = document.getElementById('myForm');
         // event.target — это HTML-элемент form
-        let formData = new FormData(event.target);
-
+        let formData = new FormData(form);
         // Собираем данные формы в объект
         let obj = {};
         formData.forEach((value, key) => obj[key] = value);
 
+
+        sendSolution("POST", "/try", obj);
+        /*if(status === 200) {
+            alert("!!!!!!!!!!!!!!!!!")
+            //sendRequest("POST", '/try', obj);
+        };*/
+
+        return true;
+    }};
+
+
+    function sendSolution(method, url, data) {
+
         var cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)online_checker\s*\=\s*([^;]*).*$)|^.*$/, "$1");
 
-        console.log(cookieValue);
-
-        // Собираем запрос к серверу
-        let request = new Request(event.target.action, {
-            url: '/try',
-            method: 'POST',
-            body: JSON.stringify(obj),
-            headers: {
-                'Authorization':'Bearer ' + cookieValue,
-                'Content-Type': 'application/json',
-            },
-        });
-
-        // Вернуть все попытки по юзеру
-        /*let allTriesByUser = new Request(event.target.action, {
-            url: '/tries/{userID}',
-            method: 'Get',
-            body: JSON.stringify(obj),
-            headers: {
-                'Authorization':'Bearer ' + cookieValue,
-                'Content-Type': 'application/json',
-            },
-        });*/
-
-
-        // Отправляем (асинхронно!)
-        fetch(request).then(
-                (res)  => {
-                    return res.text();
-                })
-                .then(data => {
-                    alert('solution send successfully!');
-                    $('html').html(data);
-                },
-                (error) => {
-            // Запрос не получилось отправить
-            alert('solution send failed: ' + error);
+        let xhr = new XMLHttpRequest();
+        xhr.open(method, url, false);
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhr.setRequestHeader("Authorization", 'Bearer ' + cookieValue);
+         xhr.onreadystatechange = function () {
+             if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                 sendRequest("GET", "/tries/userID/64", null)
+             }
+         };
+        if (data != null) {
+            xhr.send(JSON.stringify(data));
+        } else {
+            xhr.send();
         }
-                );
+    }
+    
+    
+    
+    function sendRequest(method, url, data) {
+
+        var cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)online_checker\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+
+        let xhr = new XMLHttpRequest();
+        xhr.open(method, url, false);
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhr.setRequestHeader("Authorization", 'Bearer ' + cookieValue);
+        xhr.onreadystatechange = function () {
+            if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+
+                //$('html').html(xhr.responseText);
+                document.write(xhr.responseText);
+                window.history.pushState("", "", url);
+
+            }
+        };
+        xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+        if (data != null) {
+            xhr.send(JSON.stringify(data));
+        } else {
+            xhr.send();
+        }
     }
 </script>
 </body>

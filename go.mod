@@ -13,6 +13,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/schema v1.2.0
 	github.com/lib/pq v1.10.0
+	github.com/micro/go-micro v1.18.0
 	github.com/nats-io/nats.go v1.10.0
 	github.com/satori/go.uuid v1.2.0
 	go.uber.org/zap v1.16.0

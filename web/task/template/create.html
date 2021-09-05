@@ -13,7 +13,7 @@
 <div class="container">
     <h1>Create task</h1>
 
-    <form method="post" action="/tasks">
+    <form name="my-form" id="my-form">
         <div class="form-group">
             <label for="title">Title</label>
             <input type="text" class="form-control" name="title" id="title" value="{{.Title}}">
@@ -28,5 +28,58 @@
         <button type="submit" class="btn btn-primary">Add</button>
     </form>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
+
+<script type="text/javascript">
+
+    document.getElementById("my-form").addEventListener('submit', submitForm);
+
+    function submitForm(event) {
+        // Отменяем стандартное поведение браузера с отправкой формы
+        event.preventDefault();
+
+        var form = document.getElementById('my-form');
+
+        // event.target — это HTML-элемент form
+        let formData = new FormData(form);
+        // Собираем данные формы в объект
+        let obj = {};
+        formData.forEach((value, key) => obj[key] = value);
+
+        sendRequest("POST", "/tasks", obj, tasksList);
+    }
+
+    function tasksList(prevResponse) {
+        sendRequest("GET", "/admin", null, function (response) {
+            document.write(response);
+            window.history.pushState("", "", "/admin");
+        });
+    }
+
+    function sendRequest(method, url, data, callback) {
+        var cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)online_checker\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+
+        let xhr = new XMLHttpRequest();
+        xhr.open(method, url, false);
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhr.setRequestHeader("Authorization", 'Bearer ' + cookieValue);
+        xhr.onreadystatechange =  function () {
+            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                callback(xhr.responseText);
+            }
+        };
+        xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+        if (data != null) {
+            xhr.send(JSON.stringify(data));
+        } else {
+            xhr.send();
+        }
+    }
+
+</script>
+
+
+
 </body>
 </html>

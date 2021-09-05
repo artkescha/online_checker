@@ -2,14 +2,6 @@ package handlers
 
 import (
 	"fmt"
-	"github.com/artkescha/checker/online_checker/pkg/session"
-	"github.com/artkescha/checker/online_checker/pkg/tries"
-	"github.com/artkescha/checker/online_checker/pkg/tries/repository"
-	"github.com/artkescha/checker/online_checker/pkg/tries/transmitter"
-	"github.com/artkescha/checker/online_checker/web/request"
-	"github.com/artkescha/checker/online_checker/web/response"
-	"github.com/artkescha/grader_api/send_solution"
-
 	"github.com/gorilla/mux"
 	"go.uber.org/zap"
 	"html/template"
@@ -17,6 +9,14 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/artkescha/checker/online_checker/pkg/session"
+	"github.com/artkescha/checker/online_checker/pkg/tries"
+	"github.com/artkescha/checker/online_checker/pkg/tries/repository"
+	"github.com/artkescha/checker/online_checker/pkg/tries/transmitter"
+	"github.com/artkescha/checker/online_checker/web/request"
+	"github.com/artkescha/checker/online_checker/web/response"
+	"github.com/artkescha/grader_api/send_solution"
 )
 
 type Solutioner interface {
@@ -35,6 +35,7 @@ type SolutionHandler struct {
 
 func (h SolutionHandler) SendSolution(w http.ResponseWriter, r *http.Request) {
 	var try try.Try
+	//r.ParseForm()
 	err := request.DecodePostParams(&try, r)
 	if err != nil {
 		response.WriteError(w, http.StatusBadRequest, err)
@@ -47,7 +48,7 @@ func (h SolutionHandler) SendSolution(w http.ResponseWriter, r *http.Request) {
 	}
 
 	try.Created = time.Now()
-	try.UserID = user.ID
+	//try.UserID = user.ID
 
 	log.Printf("try: %v", try)
 
@@ -65,21 +66,8 @@ func (h SolutionHandler) SendSolution(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, `{"error": "publish to broker failed"}`, http.StatusInternalServerError)
 		return
 	}
-	//http.Redirect(w, r, target, http.StatusFound)
 
-	//log.Printf("redirect tries!!!!!!!\n")
-
-	//TODO UserID
-	//http.Redirect(w, r, "/tries?userID="+"1", http.StatusSeeOther)
-	//http.Redirect(w, r, "/tries/1", http.StatusSeeOther)
-	//http.Redirect(w, r,"/tries/1", http.StatusSeeOther)
-
-	//log.Printf("redirect tries!!!!!!!\n")
-
-	http.Redirect(w, r, fmt.Sprintf("/tries/userID/%d", user.ID), http.StatusSeeOther)
-	//http.Redirect(w, r, r.Header.Get("Referer"), 302)
-
-	//response.WriteResponse(w, http.StatusOK, true, "success")
+	//http.Redirect(w, r, "/tries/userID/64", http.StatusSeeOther)
 }
 
 func (h SolutionHandler) ListByUserID(w http.ResponseWriter, r *http.Request) {

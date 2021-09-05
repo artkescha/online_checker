@@ -11,7 +11,7 @@
 <body>
 
 <div class="container">
-    <form method="get" action="/tasks/solutionForm/{{.ID}}">
+    <form id="solution" method="post" action="/tasks/solutionForm/{{.ID}}">
     <div class="form-group text-center">
     <strong>{{.Title}}</strong>
     </div>
@@ -21,5 +21,59 @@
     </div>
     </form>
 </div>
+
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
+
+<script type="text/javascript">
+
+
+    document.getElementById('solution').addEventListener('submit', submitForm);
+
+    function submitForm(event) {
+        // Отменяем стандартное поведение браузера с отправкой формы
+        //event.preventDefault();
+        // event.target — это HTML-элемент form
+        //let formData = new FormData(event.target);
+
+        // Собираем данные формы в объект
+        //let obj = {};
+        //formData.forEach((value, key) => obj[key] = value);
+
+        const formData = new URLSearchParams(new FormData(this));
+        console.log(formData);
+
+        var cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)online_checker\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+
+        console.log(cookieValue);
+
+        // Собираем запрос к серверу
+        let request = new Request(event.target.action, {
+            url: '/tasks/solutionForm/2',
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Authorization':'Bearer ' + cookieValue,
+                'Content-Type': 'application/json',
+            },
+        });
+
+        // Отправляем (асинхронно!)
+        fetch(request).then(
+                (res)  => {
+                    return res.text();
+                })
+                .then(data => {
+
+                            $('html').html(data)
+                        },
+                        (error) => {
+                            // Запрос не получилось отправить
+                            alert('solution send failed: ' + error);
+                        }
+                );
+    }
+</script>
+
 </body>
 </html>

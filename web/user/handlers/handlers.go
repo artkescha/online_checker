@@ -108,11 +108,10 @@ func (h UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 func (h UserHandler) LogOut(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json;charset=utf-8")
 
-	session, err := request.ExtractContext(r)
-
-	err = h.SessionManager.DestroySession(strconv.Itoa(int(session.ID)))
+	user, err := request.ExtractContext(r)
+	err = h.SessionManager.DestroySession(strconv.Itoa(int(user.ID)))
 	if err != nil {
-		response.WriteError(w, http.StatusInternalServerError, err)
+		response.WriteError(w, http.StatusUnauthorized, err)
 		return
 	}
 	response.WriteResponse(w, http.StatusOK, struct{}{})
@@ -132,6 +131,12 @@ func (h UserHandler) State(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h UserHandler) List(w http.ResponseWriter, r *http.Request) {
+	user_, err := request.ExtractContext(r)
+	if err != nil {
+		h.Logger.Error("extract use request context err", err)
+		http.Error(w, `extract use request context err`, http.StatusUnauthorized)
+		return
+	}
 	//TODO limit:3 offset:0 in request
 	tasks, err := h.TasksRepo.List(r.Context(), 100, 0, "created_at")
 	if err != nil {
@@ -141,8 +146,10 @@ func (h UserHandler) List(w http.ResponseWriter, r *http.Request) {
 	}
 	err = h.Tmpl.ExecuteTemplate(w, "list.html", struct {
 		Tasks []task.Task
+		UserId int64
 	}{
 		Tasks: tasks,
+		UserId: user_.ID,
 	})
 	if err != nil {
 		h.Logger.Error("tasks list executeTemplate err", err)

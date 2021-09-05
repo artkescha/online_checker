@@ -9,15 +9,15 @@ import (
 	"github.com/artkescha/checker/online_checker/pkg/task/repository"
 	"github.com/artkescha/checker/online_checker/pkg/unzipper"
 	"github.com/artkescha/checker/online_checker/pkg/zipper"
+	"github.com/artkescha/checker/online_checker/web/request"
+	"strconv"
 
 	"github.com/artkescha/checker/online_checker/web/response"
 	"github.com/gorilla/mux"
-	"github.com/gorilla/schema"
 	"go.uber.org/zap"
 	"html/template"
 	"net/http"
 	"path/filepath"
-	"strconv"
 )
 
 type Tasker interface {
@@ -41,6 +41,12 @@ type TaskHandler struct {
 }
 
 func (h TaskHandler) List(w http.ResponseWriter, r *http.Request) {
+	user_, err := request.ExtractContext(r)
+	if err != nil {
+		h.Logger.Error("extract use request context err", err)
+		http.Error(w, `extract use request context err`, http.StatusUnauthorized)
+		return
+	}
 	//TODO limit:3 offset:0 in request
 	tasks, err := h.TasksRepo.List(r.Context(), 100, 0, "created_at")
 	if err != nil {
@@ -50,8 +56,10 @@ func (h TaskHandler) List(w http.ResponseWriter, r *http.Request) {
 	}
 	err = h.Tmpl.ExecuteTemplate(w, "list.html", struct {
 		Tasks []task.Task
+		UserId int64
 	}{
 		Tasks: tasks,
+		UserId:user_.ID,
 	})
 	if err != nil {
 		h.Logger.Error("tasks list executeTemplate err", err)
@@ -61,26 +69,45 @@ func (h TaskHandler) List(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h TaskHandler) Create(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
+	/*err := r.ParseForm()
+	if err != nil {
+		http.Error(w, fmt.Sprintf("decode request params failed %s", err), http.StatusInternalServerError)
+		return
+	}
+	fmt.Printf("request: %v", r)
 	task := task.Task{}
+	fmt.Printf("task : %v", task)
 	decoder := schema.NewDecoder()
 	decoder.IgnoreUnknownKeys(true)
-	err := decoder.Decode(&task, r.PostForm)
+
+
+
+	//err = decoder.Decode(&task, r.PostForm)
+	//if err != nil {
+	//	http.Error(w, `Bad form`, http.StatusBadRequest)
+	//	return
+	//}
+    */
+
+	task := task.Task{}
+
+	err := request.DecodePostParams(&task, r)
 	if err != nil {
-		http.Error(w, `Bad form`, http.StatusBadRequest)
+		response.WriteError(w, http.StatusBadRequest, err)
 		return
 	}
 
 	//TODO!!!!!!!!!!!
 	task.TestsPath = "C:/"
-
 	_, err = h.TasksRepo.Insert(r.Context(), task)
 	if err != nil {
 		h.Logger.Error("create task err", err)
 		http.Error(w, fmt.Sprintf("create task err %s", err), http.StatusInternalServerError)
 		return
 	}
-	http.Redirect(w, r, "/admin", http.StatusSeeOther)
+	response.WriteResponse(w, http.StatusOK, true, "success")
+
+	//http.Redirect(w, r, "/admin", http.StatusSeeOther)
 }
 
 func (h TaskHandler) Edit(w http.ResponseWriter, r *http.Request) {
@@ -131,15 +158,24 @@ func (h *TaskHandler) Update(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, `Bad id`, http.StatusBadRequest)
 		return
 	}
-	r.ParseForm()
+	/*r.ParseForm()
 	task := new(task.Task)
 	decoder := schema.NewDecoder()
 	decoder.IgnoreUnknownKeys(true)
+	fmt.Printf("task: %v", task)
 	err = decoder.Decode(task, r.PostForm)
 	if err != nil {
 		http.Error(w, `Bad form`, http.StatusBadRequest)
 		return
+	}*/
+	task := new(task.Task)
+
+	err = request.DecodePostParams(task, r)
+	if err != nil {
+		response.WriteError(w, http.StatusBadRequest, err)
+		return
 	}
+
 	task.ID = id
 
 	ok, err := h.TasksRepo.Update(r.Context(), task)
@@ -149,7 +185,10 @@ func (h *TaskHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.Logger.Infof("update: %v %v", task, ok)
-	http.Redirect(w, r, "/admin", http.StatusSeeOther)
+
+
+	response.WriteResponse(w, http.StatusOK, ok, "success")
+	//http.Redirect(w, r, "/admin", http.StatusSeeOther)
 }
 
 func (h TaskHandler) Delete(w http.ResponseWriter, r *http.Request) {
@@ -175,18 +214,19 @@ func (h TaskHandler) SolutionForm(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, `bad id`, http.StatusBadRequest)
 		return
 	}
+	/*user, err := request.ExtractContext(r)
+	if err != nil {
+		h.Logger.Error("extract use request context err", err)
+		http.Error(w, `extract use request context err`, http.StatusUnauthorized)
+		return
+	}*/
 	//TODO middelware later
-	//user, err := request.ExtractContext(r)
-	//if err != nil {
-	//	response.WriteError(w, http.StatusUnauthorized, err)
-	//	return
-	//}
-	//h.Logger.Info("user: %s", user)
 	//TODO replace later languageID = 1 (golang 1.13)
 	err = h.Tmpl.ExecuteTemplate(w, "send_solution.html", struct {
 		TaskID     int
 		LanguageID int
-	}{TaskID: taskID, LanguageID: 1})
+		UserID int64
+	}{TaskID: taskID, LanguageID: 1, UserID:64})
 
 	if err != nil {
 		h.Logger.Error("execute send solution template err", err)

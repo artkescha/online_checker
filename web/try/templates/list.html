@@ -14,12 +14,13 @@
 <body>
 <div class="container">
     <h1>Your Tries</h1>
-    <table class="table">
 
+    <table class="table">
         <thead>
         <tr>
             <th>#</th>
             <th>Solution</th>
+            <th>Task_ID</th>
             <th>Status</th>
             <th>Description</th>
             <th>Created</th>
@@ -31,6 +32,7 @@
         <tr>
             <td>{{.ID}}</td>
             <td><a href="/try/{{.ID}}" class="do-click btn btn-primary">See solution</a></td>
+            <td>{{.TaskID}}</td>
             <td>{{.Status}}</td>
             <td>{{.Description}}</td>
             <td>{{.Created}}</td>
@@ -44,15 +46,12 @@
 <script type="text/javascript">
 
     $('.do-click').click(function() {
-        if(!confirm("Are you sure?")) {
-            return
-        }
 
         var cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)online_checker\s*\=\s*([^;]*).*$)|^.*$/, "$1");
 
         console.log(cookieValue);
 
-        $elem = $(this)
+        $elem = $(this);
         $.ajax({
             url: '/try/' + $elem.data("id"),
             type: 'GET',

@@ -43,7 +43,7 @@ func (repo Repo) Insert(ctx context.Context, task task.Task) (*task.Task, error)
 }
 
 func (repo Repo) List(ctx context.Context, limit, offset uint32, sortField string) ([]task.Task, error) {
-	rows, err := repo.db.Query("SELECT * FROM tasks ORDER BY $1 DESC LIMIT $2 OFFSET $3", sortField, limit, offset)
+	rows, err := repo.db.Query("SELECT * FROM tasks ORDER BY $1 LIMIT $2 OFFSET $3", sortField, limit, offset)
 	if err != nil {
 		return []task.Task{}, fmt.Errorf("query tasks list failed: %s", err)
 	}

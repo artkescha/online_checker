@@ -91,7 +91,9 @@
                     },
                     method: 'GET',
                     success: function(res) {
-                        $('html').html(res);
+                        document.write(res);
+                        //window.history.pushState("", "", "/dsd/");
+                        //$('html').html(res);
                     }
                 });
             },

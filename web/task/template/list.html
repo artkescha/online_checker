@@ -11,9 +11,11 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
 </head>
+
 <body>
 <div class="container">
     <h1>Tasks</h1>
+    <span class="btn btn-primary" id="see-your-solution">See your solution</span>
     <table class="table">
         <thead>
         <tr>
@@ -36,39 +38,69 @@
         </tr>
         {{end}}
         </tbody>
+        </table>
+    <script type="text/javascript">
+         console.log("Тест работы!");
+
+         $('.do-delete').click(function() {
+             if(!confirm("Are you sure?")) {
+                 return
+             }
+             $elem = $(this);
+             console.log($elem.data("id"));
+             $.ajax({
+                 url: '/tasks/' + $elem.data("id"),
+                 type: 'DELETE',
+                 data: {},
+                 success: function(resp) {
+                     //if success in json
+                     console.log(resp);
+                     if(Object.values(resp)[0]) {
+
+                         $elem.parent().parent().remove();
+
+                         //TODO
+                         //sendRequest("GET", '/admin', null);
+                     }
+                 },
+             });
+         });
+
+         document.getElementById('see-your-solution').onclick = function() {
+
+             sendRequest("GET", "/tries/userID/64", null);
+             /*if(status === 200) {
+                 alert("!!!!!!!!!!!!!!!!!")
+                 //sendRequest("POST", '/try', obj);
+             };*/
+
+             return true;
+         };
+
+         function sendRequest(method, url, data) {
+             var cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)online_checker\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+
+             let xhr = new XMLHttpRequest();
+             xhr.open(method, url, false);
+             xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+             xhr.setRequestHeader("Authorization", 'Bearer ' + cookieValue);
+             xhr.onreadystatechange = function () {
+                 if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+
+                     $('html').html(xhr.responseText);
+                     window.history.pushState("", "", url);
+
+                 }
+             };
+             xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+             if (data != null) {
+                 xhr.send(JSON.stringify(data));
+             } else {
+                 xhr.send();
+             }
+         }
+    </script>
 </div>
-
-
-<script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
-
-<script type="text/javascript">
-    $('.do-delete').click(function() {
-        if(!confirm("Are you sure?")) {
-            return
-        }
-        $elem = $(this)
-        $.ajax({
-            url: '/tasks/' + $elem.data("id"),
-            type: 'DELETE',
-            data: {},
-            success: function(resp) {
-                //if success in json
-                if(Object.values(resp)[0]) {
-                    $elem.parent().parent().remove()
-                    $.ajax({
-                        url: '/admin',
-                        type: 'GET',
-                        data: {},
-                        success: function(data) {
-                                $('html').html(data)
-
-                        },
-                    })
-                }
-            },
-        });
-    })
-</script>
-
 </body>
+
 </html>
