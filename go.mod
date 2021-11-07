@@ -11,9 +11,8 @@ require (
 	github.com/golang/mock v1.5.0
 	github.com/golang/protobuf v1.4.3
 	github.com/gorilla/mux v1.8.0
-	github.com/gorilla/schema v1.2.0
 	github.com/lib/pq v1.10.0
-	github.com/micro/go-micro v1.18.0
+	github.com/nats-io/nats-server/v2 v2.1.0 // indirect
 	github.com/nats-io/nats.go v1.10.0
 	github.com/satori/go.uuid v1.2.0
 	go.uber.org/zap v1.16.0
