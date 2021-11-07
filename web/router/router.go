@@ -72,10 +72,10 @@ func NewRouter(userHandlers handlers.User, taskHandlers task_handlers.TaskHandle
 	router.HandleFunc("/tries/userID/{userID}", middlewares.Authorization(sessionManager, tryHandler.ListByUserID)).Methods("GET")
 
 	//подключаем статику к форме login-а
-	router.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir("./web/user/template/"))))
+	router.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir("../web/user/template/"))))
 
 	//подключаем статику к форме login-а
-	router.PathPrefix("/").Handler(http.StripPrefix("/tries/userID/{userID}/", http.FileServer(http.Dir("./web/try/template/"))))
+	router.PathPrefix("/").Handler(http.StripPrefix("/tries/userID/{userID}/", http.FileServer(http.Dir("../web/try/template/"))))
 
 	//подключаем общие middlewares
 	router.Use(middlewares.Logger.AccessLogMiddleware)
