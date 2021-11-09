@@ -64,7 +64,7 @@ func main() {
 	manager := session.NewManager(mc)
 
 	userHandlers := handlers.UserHandler{
-		Tmpl:      template.Must(template.ParseGlob("../web/user/template/*")),
+		Tmpl:      template.Must(template.ParseGlob("./web/user/template/*")),
 		UsersRepo: user_repo.NewUsersRepo(db),
 		//TODO дубль подумать использовать ли интерфейс!!!!!!!!!
 		TasksRepo:      task_repo.NewTasksRepo(db),
@@ -73,7 +73,7 @@ func main() {
 	}
 
 	taskHandlers := task_handlers.TaskHandler{
-		Tmpl:      template.Must(template.ParseGlob("../web/task/template/*")),
+		Tmpl:      template.Must(template.ParseGlob("./web/task/template/*")),
 		TasksRepo: task_repo.NewTasksRepo(db),
 		//TODO дубль подумать использовать ли интерфейс!!!!!!!!!
 		SessionManager: manager,
@@ -96,7 +96,7 @@ func main() {
 	}
 
 	solutionHandler := try_handler.SolutionHandler{
-		Tmpl:      template.Must(template.ParseGlob("../web/try/templates/*")),
+		Tmpl:      template.Must(template.ParseGlob("./web/try/templates/*")),
 		TriesRepo: try_repo.NewTriesRepo(db),
 		//TODO дубль подумать использовать ли интерфейс!!!!!!!!!
 		SessionManager: manager,

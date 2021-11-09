@@ -271,7 +271,6 @@ func (h TaskHandler) UploadTests(w http.ResponseWriter, r *http.Request) {
 
 	rootPath := "/home/artyom/solutions/tests"
 	tempPath := "/home/artyom/temp-zip"
-	//tempPath := "../temp-zip"
 
 	//make rootPath
 	fStorage, err := fileStorage.New(tempPath, rootPath)
