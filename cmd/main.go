@@ -51,7 +51,8 @@ func main() {
 	//	return
 	//}
 
-	postgreURL := "host=localhost port=5432 user=postgres password=postgres dbname=grader sslmode=disable"
+	//postgreURL := "host=localhost port=5432 user=postgres password=postgres dbname=grader sslmode=disable"
+	postgreURL := "host=172.16.238.10 port=5432 user=root password=root dbname=grader sslmode=disable"
 	db, err := sql.Open("postgres", postgreURL)
 	if err != nil {
 		zapLogger.Error("connection to postgres failed: %s", zap.Error(err))
@@ -59,7 +60,7 @@ func main() {
 	}
 	defer db.Close()
 
-	mc := memcache.New("127.0.0.1:11211")
+	mc := memcache.New("172.16.238.12:11211")
 
 	manager := session.NewManager(mc)
 
@@ -80,7 +81,7 @@ func main() {
 		Logger:         logger,
 	}
 
-	nc, err := nats.Connect(nats.DefaultURL,
+	nc, err := nats.Connect("nats://172.16.238.13:4222",
 		nats.ReconnectWait(1*time.Minute),
 		nats.MaxReconnects(int(math.MaxUint32)),
 		nats.ReconnectHandler(func(nc *nats.Conn) {

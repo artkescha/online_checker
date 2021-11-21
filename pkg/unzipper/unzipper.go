@@ -10,6 +10,8 @@ import (
 	"strings"
 )
 
+//go:generate mockgen -destination=./unzipper_mock.go -package=unzipper . UnZipper
+
 type UnZipper interface {
 	Unzip(src string, dest string, fileExpansiones []string) error
 }

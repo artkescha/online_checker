@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 )
 
+//go:generate mockgen -destination=./zipper_mock.go -package=zipper . Zipper
+
 type Zipper interface {
 	Add(filePaths []string, archName string) error
 	Get() (string, error)

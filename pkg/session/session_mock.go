@@ -5,35 +5,36 @@
 package session
 
 import (
+	reflect "reflect"
+
 	user "github.com/artkescha/checker/online_checker/pkg/user"
 	gomock "github.com/golang/mock/gomock"
-	reflect "reflect"
 )
 
-// MockManager is a mock of Manager interface
+// MockManager is a mock of Manager interface.
 type MockManager struct {
 	ctrl     *gomock.Controller
 	recorder *MockManagerMockRecorder
 }
 
-// MockManagerMockRecorder is the mock recorder for MockManager
+// MockManagerMockRecorder is the mock recorder for MockManager.
 type MockManagerMockRecorder struct {
 	mock *MockManager
 }
 
-// NewMockManager creates a new mock instance
+// NewMockManager creates a new mock instance.
 func NewMockManager(ctrl *gomock.Controller) *MockManager {
 	mock := &MockManager{ctrl: ctrl}
 	mock.recorder = &MockManagerMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use
+// EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockManager) EXPECT() *MockManagerMockRecorder {
 	return m.recorder
 }
 
-// CreateSession mocks base method
+// CreateSession mocks base method.
 func (m *MockManager) CreateSession(arg0 user.User) (string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateSession", arg0)
@@ -42,13 +43,13 @@ func (m *MockManager) CreateSession(arg0 user.User) (string, error) {
 	return ret0, ret1
 }
 
-// CreateSession indicates an expected call of CreateSession
+// CreateSession indicates an expected call of CreateSession.
 func (mr *MockManagerMockRecorder) CreateSession(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateSession", reflect.TypeOf((*MockManager)(nil).CreateSession), arg0)
 }
 
-// DestroySession mocks base method
+// DestroySession mocks base method.
 func (m *MockManager) DestroySession(arg0 string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DestroySession", arg0)
@@ -56,13 +57,13 @@ func (m *MockManager) DestroySession(arg0 string) error {
 	return ret0
 }
 
-// DestroySession indicates an expected call of DestroySession
+// DestroySession indicates an expected call of DestroySession.
 func (mr *MockManagerMockRecorder) DestroySession(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DestroySession", reflect.TypeOf((*MockManager)(nil).DestroySession), arg0)
 }
 
-// GetSession mocks base method
+// GetSession mocks base method.
 func (m *MockManager) GetSession(arg0 string) (*Session, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetSession", arg0)
@@ -71,7 +72,7 @@ func (m *MockManager) GetSession(arg0 string) (*Session, error) {
 	return ret0, ret1
 }
 
-// GetSession indicates an expected call of GetSession
+// GetSession indicates an expected call of GetSession.
 func (mr *MockManagerMockRecorder) GetSession(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSession", reflect.TypeOf((*MockManager)(nil).GetSession), arg0)

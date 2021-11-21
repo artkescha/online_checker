@@ -7,6 +7,8 @@ import (
 	"github.com/nats-io/nats.go"
 )
 
+//go:generate mockgen -destination=./transmitter_mock.go -package=transmitter . Transmitter
+
 type Transmitter interface {
 	Transmit(topic string, try send_solution.Try) error
 }

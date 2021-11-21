@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 )
 
+//go:generate mockgen -destination=./fileStorage_mock.go -package=fileStorage . FileStorage
+
 type FileStorage interface {
 	UploadFile(file multipart.File) (string, error)
 	DownloadFile(id uint64) ([]byte, error)

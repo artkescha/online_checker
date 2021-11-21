@@ -7,6 +7,8 @@ import (
 	"github.com/artkescha/checker/online_checker/pkg/task"
 )
 
+//go:generate mockgen -destination=./repository_mock.go -package=repository . TaskRepo
+
 type TaskRepo interface {
 	Insert(ctx context.Context, task task.Task) (*task.Task, error)
 	List(ctx context.Context, limit, offset uint32, sortField string) ([]task.Task, error)

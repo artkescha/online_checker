@@ -7,6 +7,8 @@ import (
 	"github.com/artkescha/checker/online_checker/pkg/tries"
 )
 
+//go:generate mockgen -destination=./repository_mock.go -package=repository . TriesRepo
+
 type TriesRepo interface {
 	Insert(ctx context.Context, try try.Try) error
 	List(ctx context.Context, limit, offset uint32) ([]try.Try, error)
