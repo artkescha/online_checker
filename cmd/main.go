@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"github.com/artkescha/checker/online_checker/config"
 	"github.com/artkescha/checker/online_checker/pkg/middlewares"
 	"github.com/artkescha/checker/online_checker/pkg/session"
 	task_repo "github.com/artkescha/checker/online_checker/pkg/task/repository"
@@ -27,18 +28,24 @@ func main() {
 	zapLogger, _ := zap.NewProduction()
 	defer zapLogger.Sync()
 
+	config, err := config.ConfigFromFile("./config.yaml")
+	if err!=nil {
+		zapLogger.Error("parse config file failed: %s", zap.Error(err))
+		return
+	}
+
 	//port, exists := os.LookupEnv("PORT")
 	//if !exists {
 	//	zapLogger.Error("port is required")
 	//	return
 	//}
 
-	port := "8080"
+	//port := "8080"
 
 	zapLogger.Info("starting server",
 		zap.String("logger", "ZAP"),
-		zap.String("host", "0.0.0.0"),
-		zap.String("port", port),
+		zap.String("host", config.WebUrl.Hostname()),
+		zap.String("port", config.WebUrl.Port()),
 	)
 
 	logger := zapLogger.Sugar()
@@ -52,15 +59,16 @@ func main() {
 	//}
 
 	//postgreURL := "host=localhost port=5432 user=postgres password=postgres dbname=grader sslmode=disable"
-	postgreURL := "host=172.16.238.10 port=5432 user=root password=root dbname=grader sslmode=disable"
-	db, err := sql.Open("postgres", postgreURL)
+	//postgreURL := "host=172.16.238.10 port=5432 user=root password=root dbname=grader sslmode=disable"
+	db, err := sql.Open(config.DBDriver, config.DBConnection)
 	if err != nil {
 		zapLogger.Error("connection to postgres failed: %s", zap.Error(err))
 		return
 	}
 	defer db.Close()
 
-	mc := memcache.New("172.16.238.12:11211")
+	//mc := memcache.New("172.16.238.12:11211")
+	mc := memcache.New(config.MemoryStorageUrl)
 
 	manager := session.NewManager(mc)
 
@@ -107,5 +115,5 @@ func main() {
 
 	router := router.NewRouter(userHandlers, taskHandlers, solutionHandler, manager)
 
-	server.Start("0.0.0.0:"+port, router)
+	server.Start(config.WebUrl.Host, router)
 }

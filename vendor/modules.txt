@@ -74,3 +74,5 @@ google.golang.org/protobuf/reflect/protoreflect
 google.golang.org/protobuf/reflect/protoregistry
 google.golang.org/protobuf/runtime/protoiface
 google.golang.org/protobuf/runtime/protoimpl
+# gopkg.in/yaml.v2 v2.2.2
+gopkg.in/yaml.v2

@@ -331,7 +331,6 @@ func (h TaskHandler) DownloadTests(w http.ResponseWriter, r *http.Request) {
 	rootPath := filepath.Join("../tests/", taskID)
 
 	files, err := kit.FilePathWalkDir(rootPath, []string{".in", ".out"})
-
 	if err != nil {
 		downloadError = err
 		h.Logger.Errorf("error scanning files failed: %s", err)
