@@ -10,6 +10,7 @@ import (
 	"github.com/artkescha/checker/online_checker/pkg/unzipper"
 	"github.com/artkescha/checker/online_checker/pkg/zipper"
 	"github.com/artkescha/checker/online_checker/web/request"
+	"github.com/artkescha/checker/online_checker/config"
 	"strconv"
 
 	"github.com/artkescha/checker/online_checker/web/response"
@@ -37,6 +38,7 @@ type TaskHandler struct {
 	Tmpl           *template.Template
 	TasksRepo      repository.TaskRepo
 	SessionManager session.Manager
+	Config         config.Config
 	Logger         *zap.SugaredLogger
 }
 
@@ -244,7 +246,10 @@ func (h TaskHandler) UploadTests(w http.ResponseWriter, r *http.Request) {
 	}
 	// Parse our multipart form, 10 << 20 specifies a maximum
 	// upload of 10 MB files.
-	r.ParseMultipartForm(10 << 20)
+	if err := r.ParseMultipartForm(10 << 20); err != nil {
+		response.WriteError(w, http.StatusBadRequest, fmt.Errorf("upload file failed, parse multipart form, reason: %s", err))
+		return
+	}
 	// FormFile returns the first file for the given key `myArch`
 	// it also returns the FileHeader so we can get the Filename,
 	// the Header and the size of the file
@@ -269,12 +274,8 @@ func (h TaskHandler) UploadTests(w http.ResponseWriter, r *http.Request) {
 	h.Logger.Debugf("File Size: %+v\n", handler.Size)
 	h.Logger.Debugf("MIME Header: %+v\n", handler.Header)
 
-	rootPath := "/home/artyom/solutions/tests"
-	tempPath := "/home/artyom/temp-zip"
-
 	//make rootPath
-	fStorage, err := fileStorage.New(tempPath, rootPath)
-
+	fStorage, err := fileStorage.New(h.Config.TempPath, h.Config.RootPath)
 	if err != nil {
 		uploadError = err
 		h.Logger.Errorf("upload file failed, reason %s", uploadError)
@@ -282,9 +283,12 @@ func (h TaskHandler) UploadTests(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tempZipPath, err := fStorage.UploadFile(file)
-	//required!!
-	file.Close()
-
+	defer func() {
+		if err := file.Close(); err != nil {
+			h.Logger.Errorf("file close failed %s", err)
+			return
+		}
+	}()
 	if err != nil {
 		uploadError = err
 		h.Logger.Errorf("upload file failed, reason %s", uploadError)
@@ -292,8 +296,7 @@ func (h TaskHandler) UploadTests(w http.ResponseWriter, r *http.Request) {
 	}
 
 	unzpr := unzipper.New()
-	path := filepath.Join(rootPath, taskID)
-
+	path := filepath.Join(h.Config.RootPath, taskID)
 	if exist := kit.ExistsFolder(path); !exist {
 		if err := kit.EnsureDir(path); err != nil {
 			uploadError = err
@@ -319,7 +322,6 @@ func (h TaskHandler) DownloadTests(w http.ResponseWriter, r *http.Request) {
 		response.WriteError(w, http.StatusBadRequest, fmt.Errorf("upload file failed, reason: task id is empty"))
 		return
 	}
-
 	defer func() {
 		if downloadError != nil {
 			response.WriteError(w, http.StatusBadRequest, fmt.Errorf("failedly download file %s\n", downloadError))
@@ -328,7 +330,7 @@ func (h TaskHandler) DownloadTests(w http.ResponseWriter, r *http.Request) {
 		response.WriteResponse(w, http.StatusOK, "archive download successfully")
 	}()
 
-	rootPath := filepath.Join("../tests/", taskID)
+	rootPath := filepath.Join(h.Config.TmpTestsPath, taskID)
 
 	files, err := kit.FilePathWalkDir(rootPath, []string{".in", ".out"})
 	if err != nil {
@@ -337,9 +339,7 @@ func (h TaskHandler) DownloadTests(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rootArchPath := "../temp-zip"
-
-	zpr, err := zipper.New(rootArchPath, ".zip")
+	zpr, err := zipper.New(h.Config.TmpZipArchPath, ".zip")
 	if err != nil {
 		downloadError = err
 		h.Logger.Errorf("new zipper with prefix .zip failed %s", err)
@@ -359,9 +359,8 @@ func (h TaskHandler) DownloadTests(w http.ResponseWriter, r *http.Request) {
 		h.Logger.Errorf("get archive failed %s\n", err)
 		return
 	}
-
 	//make rootPath
-	fStorage, err := fileStorage.New("../temp-zip", rootArchPath)
+	fStorage, err := fileStorage.New(h.Config.TmpZipArchPath, h.Config.RootPath)
 	if err != nil {
 		downloadError = err
 		h.Logger.Errorf("create file storage failed %s: ", err)
@@ -373,7 +372,14 @@ func (h TaskHandler) DownloadTests(w http.ResponseWriter, r *http.Request) {
 		h.Logger.Errorf("file storage download file with name %s failed %s: ", archName, err)
 		return
 	}
-	w.Write(fileBytes)
+	func() {
+		nBytes, err := w.Write(fileBytes)
+		if err != nil {
+			h.Logger.Errorf("download zip archive, write bytes zip archive, failed: %s", err)
+			return
+		}
+		h.Logger.Debugf("download zip archive, write number of bytes %d", nBytes)
+	}()
 }
 
 func (h TaskHandler) CreateForm(w http.ResponseWriter, r *http.Request) {

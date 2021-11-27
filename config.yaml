@@ -1,5 +1,0 @@
-web_url: http://0.0.0.0:8080
-broker_url: http://127.0.0.1:8090
-db_driver: postgres
-db_connection: host=172.16.238.10 port=5432 user=root password=root dbname=grader sslmode=disable
-memory_storage_url: 172.16.238.12:11211
