@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"github.com/artkescha/checker/online_checker/config"
 	"github.com/artkescha/checker/online_checker/pkg/fileStorage"
 	"github.com/artkescha/checker/online_checker/pkg/kit"
 	"github.com/artkescha/checker/online_checker/pkg/session"
@@ -10,7 +11,6 @@ import (
 	"github.com/artkescha/checker/online_checker/pkg/unzipper"
 	"github.com/artkescha/checker/online_checker/pkg/zipper"
 	"github.com/artkescha/checker/online_checker/web/request"
-	"github.com/artkescha/checker/online_checker/config"
 	"strconv"
 
 	"github.com/artkescha/checker/online_checker/web/response"
@@ -138,7 +138,10 @@ func (h TaskHandler) Edit(w http.ResponseWriter, r *http.Request) {
 func (h *TaskHandler) ReadOne(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
-
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 	task, err := h.TasksRepo.GetByID(r.Context(), id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

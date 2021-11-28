@@ -53,6 +53,12 @@ func (h UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	token, err := h.SessionManager.CreateSession(*user)
+	if err != nil {
+		paramsErrors := response.NewResponseParamsErrors("body",
+			"username", params.Username, err)
+		response.WriteParamsErrors(w, http.StatusUnauthorized, paramsErrors)
+		return
+	}
 	response.WriteResponse(w, http.StatusCreated, token, "token")
 }
 
@@ -95,7 +101,12 @@ func (h UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-	w.Write(response_)
+	_, err = w.Write(response_)
+	if err != nil {
+		log.Printf("write response failed: %s", err)
+		response.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
 
 	//response.WriteResponse(w, http.StatusOK, token, "token")
 
@@ -109,6 +120,10 @@ func (h UserHandler) LogOut(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json;charset=utf-8")
 
 	user, err := request.ExtractContext(r)
+	if err!=nil{
+		response.WriteError(w, http.StatusUnauthorized, err)
+		return
+	}
 	err = h.SessionManager.DestroySession(strconv.Itoa(int(user.ID)))
 	if err != nil {
 		response.WriteError(w, http.StatusUnauthorized, err)

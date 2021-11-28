@@ -11,8 +11,6 @@ import (
 	"strconv"
 )
 
-const sessionLifeDay = 7
-
 type Session struct {
 	ID   string
 	User user.User

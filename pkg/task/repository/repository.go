@@ -62,9 +62,10 @@ func (repo Repo) List(ctx context.Context, limit, offset uint32, sortField strin
 	return tasks, nil
 }
 
+//TODO implement later
 func (repo Repo) ListByUser(ctx context.Context, userID uint64, limit, offset uint32, sortField string) ([]task.Task, error) {
 	panic("implement list by user")
-	return nil, nil
+	//return nil, nil
 }
 
 func (repo Repo) GetByID(ctx context.Context, id int) (*task.Task, error) {

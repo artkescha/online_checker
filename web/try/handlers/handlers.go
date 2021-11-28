@@ -60,7 +60,7 @@ func (h SolutionHandler) SendSolution(w http.ResponseWriter, r *http.Request) {
 		LanguageId: int32(try.LanguageID),
 	}
 
-	err = h.Transmitter.Transmit("solution", apiTry)
+	err = h.Transmitter.Transmit("solution", &apiTry)
 	if err != nil {
 		h.Logger.Error("solution transmit failed", zap.Error(err))
 		http.Error(w, `{"error": "publish to broker failed"}`, http.StatusInternalServerError)
@@ -90,7 +90,7 @@ func (h SolutionHandler) ListByUserID(w http.ResponseWriter, r *http.Request) {
 		Tries: triesByUser,
 	})
 	if err != nil {
-		http.Error(w, fmt.Sprintf(`tries template err`), http.StatusInternalServerError)
+		http.Error(w, `tries template err`, http.StatusInternalServerError)
 		return
 	}
 }
@@ -111,7 +111,7 @@ func (h SolutionHandler) ReadOneTry(w http.ResponseWriter, r *http.Request) {
 	h.Logger.Info("try with id: %d", id, try)
 	err = h.Tmpl.ExecuteTemplate(w, "try.html", try)
 	if err != nil {
-		http.Error(w, fmt.Sprintf(`try template err`), http.StatusInternalServerError)
+		http.Error(w, `try template err`, http.StatusInternalServerError)
 		return
 	}
 }

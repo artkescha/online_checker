@@ -35,7 +35,7 @@ func (m *MockTransmitter) EXPECT() *MockTransmitterMockRecorder {
 }
 
 // Transmit mocks base method.
-func (m *MockTransmitter) Transmit(arg0 string, arg1 send_solution.Try) error {
+func (m *MockTransmitter) Transmit(arg0 string, arg1 *send_solution.Try) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Transmit", arg0, arg1)
 	ret0, _ := ret[0].(error)

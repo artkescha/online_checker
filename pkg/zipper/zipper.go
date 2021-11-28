@@ -56,8 +56,14 @@ func (z *zipper) Add(filePaths []string, archName string) error {
 			return err
 		}
 		_, err = io.Copy(writer, fileToZip)
+		if err != nil {
+			return fmt.Errorf("write file to zip failed %s", err)
+		}
 		//because in loop
-		fileToZip.Close()
+		err = fileToZip.Close()
+		if err != nil {
+			return fmt.Errorf("zip to file path %s failed %s", filePath, err)
+		}
 	}
 	return nil
 }

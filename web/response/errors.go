@@ -2,6 +2,7 @@ package response
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 )
@@ -30,12 +31,21 @@ func WriteParamsErrors(w http.ResponseWriter, statusCode int, errors ...Response
 
 	if err != nil {
 		log.Printf("json marshal error: %v", errors)
-		w.Write([]byte(err.Error()))
+		_, err := w.Write([]byte(err.Error()))
+		if err != nil {
+			//TODO delete write printf
+			fmt.Printf("write error failed %s", err)
+		}
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	w.WriteHeader(statusCode)
-	w.Write(response)
+	_, err = w.Write(response)
+	if err != nil {
+		//TODO delete write printf
+		fmt.Printf("write error failed %s", err)
+		return
+	}
 }
 
 func WriteError(w http.ResponseWriter, statusCode int, err error) {
@@ -45,9 +55,17 @@ func WriteError(w http.ResponseWriter, statusCode int, err error) {
 	if err != nil {
 		log.Printf("json marshal error: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
+		_, err := w.Write([]byte(err.Error()))
+		if err != nil {
+			fmt.Printf("write to response failed: %s", err)
+			return
+		}
 		return
 	}
 	w.WriteHeader(statusCode)
-	w.Write(response)
+	_, err = w.Write(response)
+	if err != nil {
+		fmt.Printf("write to response failed: %s", err)
+		return
+	}
 }

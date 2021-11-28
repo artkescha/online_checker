@@ -72,33 +72,31 @@ func (c *TestClient) TestUser(request *http.Request) (string, error) {
 		return "", fmt.Errorf(errResp.Error)
 	}
 	var token = struct {
-		value string `json:"token"`
+		Value string `json:"token"`
 	}{}
 	err = json.Unmarshal(body, &token)
 	if err != nil {
 		return "", fmt.Errorf("cant unpack result json: %s", err)
 	}
-	return token.value, nil
+	return token.Value, nil
 }
 
 func TestUserHandler_RegisterUser(t *testing.T) {
 
 	tests := []struct {
-		name     string
-		params   request.Login
-		userName string
-		password string
-		user     *user.User
-		want     string
-		wantErr  bool
+		name    string
+		params  request.Login
+		user    *user.User
+		want    string
+		wantErr bool
 	}{
 		{
 			name: "ok_test empty data",
 			params: request.Login{
-				Username: "1",
-				Password: "test",
+				Username: "",
+				Password: "",
 			},
-			user:    &user.User{Name: "1", Password: "test"},
+			user:    &user.User{Name: "", Password: ""},
 			want:    "",
 			wantErr: false,
 		},
@@ -109,7 +107,7 @@ func TestUserHandler_RegisterUser(t *testing.T) {
 				Password: "test",
 			},
 			user:    &user.User{Name: "1", Password: "test"},
-			want:    "",
+			want:    "1",
 			wantErr: false,
 		},
 		{
@@ -141,6 +139,9 @@ func TestUserHandler_RegisterUser(t *testing.T) {
 			err := fmt.Errorf("internal server error")
 			mockRepo.EXPECT().Insert(tt.params.Username, user.GetMD5Password(tt.params.Password)).Return(tt.user, err).AnyTimes()
 			mockManager.EXPECT().CreateSession(*tt.user).Return("", err).AnyTimes()
+		} else if tt.params.Username == "" && tt.params.Password == "" {
+			mockRepo.EXPECT().Insert(tt.params.Username, user.GetMD5Password(tt.params.Password)).Return(tt.user, err).AnyTimes()
+			mockManager.EXPECT().CreateSession(*tt.user).Return("", err).AnyTimes()
 		} else {
 			mockRepo.EXPECT().Insert(tt.params.Username, user.GetMD5Password(tt.params.Password)).Return(tt.user, nil).AnyTimes()
 			mockManager.EXPECT().CreateSession(*tt.user).Return("1", nil).AnyTimes()
@@ -170,12 +171,9 @@ func TestUserHandler_RegisterUser(t *testing.T) {
 }
 
 func TestUserHandler_LoginUser(t *testing.T) {
-
 	tests := []struct {
 		name     string
 		params   request.Login
-		userName string
-		password string
 		user     *user.User
 		want     string
 		wantErr  bool
@@ -183,10 +181,10 @@ func TestUserHandler_LoginUser(t *testing.T) {
 		{
 			name: "ok_test empty data",
 			params: request.Login{
-				Username: "1",
-				Password: "test",
+				Username: "",
+				Password: "",
 			},
-			user:    &user.User{Name: "1", Password: user.GetMD5Password("test")},
+			user:    &user.User{Name: "", Password: ""},
 			want:    "",
 			wantErr: false,
 		},
@@ -197,7 +195,7 @@ func TestUserHandler_LoginUser(t *testing.T) {
 				Password: "test",
 			},
 			user:    &user.User{Name: "1", Password: user.GetMD5Password("test")},
-			want:    "",
+			want:    "1",
 			wantErr: false,
 		},
 		{
@@ -229,6 +227,9 @@ func TestUserHandler_LoginUser(t *testing.T) {
 			err := fmt.Errorf("internal server error")
 			mockRepo.EXPECT().GetUserByLogin(tt.params.Username).Return(tt.user, err).AnyTimes()
 			mockManager.EXPECT().CreateSession(*tt.user).Return("", err).AnyTimes()
+		} else if tt.params.Username == "" && tt.params.Password == "" {
+			mockRepo.EXPECT().GetUserByLogin(tt.params.Username).Return(tt.user, err).AnyTimes()
+			mockManager.EXPECT().CreateSession(*tt.user).Return("", err).AnyTimes()
 		} else {
 			mockRepo.EXPECT().GetUserByLogin(tt.params.Username).Return(tt.user, nil).AnyTimes()
 			mockManager.EXPECT().CreateSession(*tt.user).Return("1", nil).AnyTimes()
@@ -249,7 +250,6 @@ func TestUserHandler_LoginUser(t *testing.T) {
 			t.Errorf("LoginUser() error = %v, wantErr %v", err, tt.wantErr)
 			return
 		}
-
 		if !reflect.DeepEqual(got, tt.want) {
 			t.Errorf("got: %+v tt.want: %+v", got, tt.want)
 			return

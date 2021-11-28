@@ -47,7 +47,7 @@ func (repo *Repo) Insert(login string, password string) (*user.User, error) {
 	return user, nil
 }
 
-func (repo Repo) GetUserByLogin(login string) (*user.User, error) {
+func (repo *Repo) GetUserByLogin(login string) (*user.User, error) {
 	user := &user.User{}
 	if err := repo.db.Ping(); err != nil {
 		return nil, err
