@@ -28,16 +28,16 @@ import (
 func main() {
 	zapLogger, err := zap.NewProduction()
 	if err != nil {
-		zapLogger.Error("zap logger production failed: %s", zap.Error(err))
 		return
 	}
+	logger := zapLogger.Sugar()
 
 	//TODO replace config_path !!!
 	config_path := "./etc/config.yaml"
 
 	config_, err := config.ConfigFromFile(config_path)
 	if err != nil {
-		zapLogger.Error("parse config file failed: %s", zap.Error(err))
+		logger.Error("parse config file failed: %s", err)
 		return
 	}
 
@@ -49,13 +49,7 @@ func main() {
 
 	//port := "8080"
 
-	zapLogger.Info("starting server",
-		zap.String("logger", "ZAP"),
-		zap.String("host", config_.WebUrl.Hostname()),
-		zap.String("port", config_.WebUrl.Port()),
-	)
-
-	logger := zapLogger.Sugar()
+	logger.Info("starting server host: %s, port: %s", config_.WebUrl.Hostname(), config_.WebUrl.Port())
 
 	middlewares.Logger.ZapLogger = logger
 
@@ -69,14 +63,13 @@ func main() {
 	//postgreURL := "host=172.16.238.10 port=5432 user=root password=root dbname=grader sslmode=disable"
 	db, err := sql.Open(config_.DBDriver, config_.DBConnection)
 	if err != nil {
-		zapLogger.Error("connection to postgres failed: %s", zap.Error(err))
+		logger.Error("connection to postgres failed: %s", err)
 		return
 	}
-
 	defer func() {
 		err := db.Close()
 		if err != nil {
-			zapLogger.Error("db close failed: %s", zap.Error(err))
+			logger.Error("db close failed: %s", err)
 			return
 		}
 	}()
@@ -107,13 +100,13 @@ func main() {
 		nats.MaxReconnects(int(math.MaxUint32)),
 		nats.ReconnectHandler(func(nc *nats.Conn) {
 
-			zapLogger.Info("got reconnected to ",
-				zap.String("host:", nc.ConnectedUrl()),
-			)
+			logger.Info("got reconnected to host %s", nc.ConnectedUrl())
 		}))
-
+	defer func() {
+		nc.Close()
+	}()
 	if err != nil {
-		zapLogger.Error("nats connection", zap.Error(err))
+		logger.Error("nats connection %s", err)
 		return
 	}
 
