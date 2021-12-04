@@ -57,11 +57,11 @@ func (h TaskHandler) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	err = h.Tmpl.ExecuteTemplate(w, "list.html", struct {
-		Tasks []task.Task
+		Tasks  []task.Task
 		UserId int64
 	}{
-		Tasks: tasks,
-		UserId:user_.ID,
+		Tasks:  tasks,
+		UserId: user_.ID,
 	})
 	if err != nil {
 		h.Logger.Error("tasks list executeTemplate err", err)
@@ -89,7 +89,7 @@ func (h TaskHandler) Create(w http.ResponseWriter, r *http.Request) {
 	//	http.Error(w, `Bad form`, http.StatusBadRequest)
 	//	return
 	//}
-    */
+	*/
 
 	task := task.Task{}
 
@@ -191,7 +191,6 @@ func (h *TaskHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	h.Logger.Infof("update: %v %v", task, ok)
 
-
 	response.WriteResponse(w, http.StatusOK, ok, "success")
 	//http.Redirect(w, r, "/admin", http.StatusSeeOther)
 }
@@ -230,8 +229,8 @@ func (h TaskHandler) SolutionForm(w http.ResponseWriter, r *http.Request) {
 	err = h.Tmpl.ExecuteTemplate(w, "send_solution.html", struct {
 		TaskID     int
 		LanguageID int
-		UserID int64
-	}{TaskID: taskID, LanguageID: 1, UserID:64})
+		UserID     int64
+	}{TaskID: taskID, LanguageID: 1, UserID: 64})
 
 	if err != nil {
 		h.Logger.Error("execute send solution template err", err)

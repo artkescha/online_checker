@@ -25,7 +25,7 @@ func WriteResponse(w http.ResponseWriter, statusCode int, value interface{}, tag
 	}
 	w.WriteHeader(statusCode)
 	_, err = w.Write(response_)
-	if err !=nil {
+	if err != nil {
 		WriteError(w, http.StatusInternalServerError, err)
 		return
 	}

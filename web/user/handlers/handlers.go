@@ -120,7 +120,7 @@ func (h UserHandler) LogOut(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json;charset=utf-8")
 
 	user, err := request.ExtractContext(r)
-	if err!=nil{
+	if err != nil {
 		response.WriteError(w, http.StatusUnauthorized, err)
 		return
 	}
@@ -160,10 +160,10 @@ func (h UserHandler) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	err = h.Tmpl.ExecuteTemplate(w, "list.html", struct {
-		Tasks []task.Task
+		Tasks  []task.Task
 		UserId int64
 	}{
-		Tasks: tasks,
+		Tasks:  tasks,
 		UserId: user_.ID,
 	})
 	if err != nil {

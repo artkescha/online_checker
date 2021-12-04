@@ -2,7 +2,7 @@ package transmitter
 
 import (
 	"github.com/artkescha/grader_api/send_solution"
-    "google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/proto"
 
 	"github.com/nats-io/nats.go"
 )

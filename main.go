@@ -31,12 +31,6 @@ func main() {
 		zapLogger.Error("zap logger production failed: %s", zap.Error(err))
 		return
 	}
-	defer func() {
-		if err := zapLogger.Sync(); err!=nil {
-			zapLogger.Error("run sync() failed: %s", zap.Error(err))
-			return
-		}
-	}()
 
 	//TODO replace config_path !!!
 	config_path := "./etc/config.yaml"
@@ -78,6 +72,7 @@ func main() {
 		zapLogger.Error("connection to postgres failed: %s", zap.Error(err))
 		return
 	}
+
 	defer func() {
 		err := db.Close()
 		if err != nil {
@@ -86,7 +81,6 @@ func main() {
 		}
 	}()
 
-	//mc := memcache.New("172.16.238.12:11211")
 	mc := memcache.New(config_.MemoryStorageUrl)
 
 	manager := session.NewManager(mc)

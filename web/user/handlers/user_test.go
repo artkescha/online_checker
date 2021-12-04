@@ -172,11 +172,11 @@ func TestUserHandler_RegisterUser(t *testing.T) {
 
 func TestUserHandler_LoginUser(t *testing.T) {
 	tests := []struct {
-		name     string
-		params   request.Login
-		user     *user.User
-		want     string
-		wantErr  bool
+		name    string
+		params  request.Login
+		user    *user.User
+		want    string
+		wantErr bool
 	}{
 		{
 			name: "ok_test empty data",
