@@ -57,6 +57,7 @@ func (repo Repo) List(ctx context.Context, limit, offset uint32, sortField strin
 		if err != nil {
 			return nil, fmt.Errorf("read rows tasks list failed: %s", err)
 		}
+		task.Created = task.Created.Local()
 		tasks = append(tasks, task)
 	}
 	return tasks, nil

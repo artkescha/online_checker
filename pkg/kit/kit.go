@@ -11,6 +11,7 @@ func ExistsFolder(name string) bool {
 		if os.IsNotExist(err) {
 			return false
 		}
+		return false
 	}
 	return true
 }
@@ -25,10 +26,10 @@ func EnsureDir(fileName string) error {
 	return nil
 }
 
-func FilePathWalkDir(root string, expansiones []string) ([]string, error) {
+func FilePathWalkDir(root string, expansion []string) ([]string, error) {
 	var files []string
 	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
-		if !info.IsDir() && len(expansiones) > 0 && IsAllowedExtension(filepath.Ext(info.Name()), expansiones) {
+		if !info.IsDir() && len(expansion) > 0 && IsAllowedExtension(filepath.Ext(info.Name()), expansion) {
 			files = append(files, path)
 		}
 		return nil

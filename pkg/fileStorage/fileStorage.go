@@ -59,7 +59,7 @@ func (fs fileStorage) UploadFile(file multipart.File) (string, error) {
 
 func (fs fileStorage) DownloadFile(path string) ([]byte, error) {
 
-	path = filepath.Join(fs.targetPath, path)
+	path = filepath.Join(fs.tempFolder, path)
 
 	fileBytes, err := ioutil.ReadFile(path)
 

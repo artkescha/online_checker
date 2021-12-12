@@ -30,10 +30,11 @@ func main() {
 	if err != nil {
 		return
 	}
+
 	logger := zapLogger.Sugar()
 
 	//TODO replace config_path !!!
-	config_path := "./etc/config.yaml"
+	config_path := "./config.yaml"
 
 	config_, err := config.ConfigFromFile(config_path)
 	if err != nil {
@@ -49,7 +50,7 @@ func main() {
 
 	//port := "8080"
 
-	logger.Info("starting server host: %s, port: %s", config_.WebUrl.Hostname(), config_.WebUrl.Port())
+	logger.Infof("starting server host: %s, port: %s", config_.WebUrl.Hostname(), config_.WebUrl.Port())
 
 	middlewares.Logger.ZapLogger = logger
 
@@ -74,12 +75,12 @@ func main() {
 		}
 	}()
 
-	mc := memcache.New(config_.MemoryStorageUrl)
+	mc := memcache.New(config_.MemcachedUrl)
 
 	manager := session.NewManager(mc)
 
 	userHandlers := handlers.UserHandler{
-		Tmpl:      template.Must(template.ParseGlob("./web/user/template/*")),
+		Tmpl:      template.Must(template.ParseGlob("../web/user/template/*")),
 		UsersRepo: user_repo.NewUsersRepo(db),
 		//TODO дубль подумать использовать ли интерфейс!!!!!!!!!
 		TasksRepo:      task_repo.NewTasksRepo(db),
@@ -88,10 +89,11 @@ func main() {
 	}
 
 	taskHandlers := task_handlers.TaskHandler{
-		Tmpl:      template.Must(template.ParseGlob("./web/task/template/*")),
+		Tmpl:      template.Must(template.ParseGlob("../web/task/template/*")),
 		TasksRepo: task_repo.NewTasksRepo(db),
 		//TODO дубль подумать использовать ли интерфейс!!!!!!!!!
 		SessionManager: manager,
+		Config:         config_,
 		Logger:         logger,
 	}
 
@@ -111,7 +113,7 @@ func main() {
 	}
 
 	solutionHandler := try_handlers.SolutionHandler{
-		Tmpl:      template.Must(template.ParseGlob("./web/try/templates/*")),
+		Tmpl:      template.Must(template.ParseGlob("../web/try/templates/*")),
 		TriesRepo: try_repo.NewTriesRepo(db),
 		//TODO дубль подумать использовать ли интерфейс!!!!!!!!!
 		SessionManager: manager,

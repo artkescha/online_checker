@@ -13,8 +13,8 @@
 </head>
 <body>
 <div class="container">
-    <a href="/tries/userID/{{.UserId}}" class="btn btn-primary">See your solutions</a>
     <h1>Tasks</h1>
+    <a href="/tries/userID/{{.UserId}}" class="btn btn-primary">See your solutions</a>
     <table class="table">
         <thead>
         <tr>
@@ -28,7 +28,6 @@
             <td>{{.ID}}</td>
             <td><a href="/tasks/{{.ID}}" class="btn btn-primary">{{.Title}}</a></td>
             <td>{{.Created}}</td>
-            <td>{{.TestsPath}}</td>
         </tr>
         {{end}}
         </tbody>

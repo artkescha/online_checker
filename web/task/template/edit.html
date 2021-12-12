@@ -25,16 +25,16 @@
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 
+<div>
+    <form method="post" enctype="multipart/form-data" id="fileUploadForm">
 
-    <form method="post" enctype="multipart/form-data" id="fileUploadForm" >
         <input type="file" class="mx-auto my-2 my-sm-3 col-xs-4" accept=".zip" name="myArch"/>
-        <div class="container-buttons">
-            <input type="submit" class="btn btn-dark" name="submit" value="upload tests *.zip archive" id="btnSubmit"/>
+
+        <input type="submit" class="btn btn-dark" name="submit" value="upload tests *.zip archive" id="btnSubmit"/>
     </form>
-
-
+</div>
     <span id="result"></span>
-
+<div>
     <form method="get"
           enctype="multipart/form-data"
           action="http://localhost:8080/tests/download/{{.ID}}">
@@ -80,7 +80,6 @@
             url: "http://localhost:8080/tests/upload/{{.ID}}",
             headers: {
                 'Authorization':'Bearer ' + cookieValue,
-                'Content-Type': 'application/json',
             },
             data: data,
             processData: false,

@@ -30,7 +30,6 @@
             <td>{{.ID}}</td>
             <td><a href="/tasks/{{.ID}}" class="btn btn-primary">{{.Title}}</a></td>
             <td>{{.Created}}</td>
-            <td>{{.TestsPath}}</td>
             <td>
                 <a href="/tasks/edit/{{.ID}}" class="btn btn-primary">Edit</a>
                 <span data-id="{{.ID}}" class="do-delete btn btn-danger">Del</span>
@@ -39,6 +38,8 @@
         {{end}}
         </tbody>
         </table>
+    <input class="form-control" name="user_id" id="user_id" type="hidden" value="{{.UserId}}" readonly>
+
     <script type="text/javascript">
          console.log("Тест работы!");
 
@@ -53,14 +54,10 @@
                  type: 'DELETE',
                  data: {},
                  success: function(resp) {
-                     //if success in json
                      console.log(resp);
                      if(Object.values(resp)[0]) {
 
                          $elem.parent().parent().remove();
-
-                         //TODO
-                         //sendRequest("GET", '/admin', null);
                      }
                  },
              });
@@ -68,12 +65,9 @@
 
          document.getElementById('see-your-solution').onclick = function() {
 
-             sendRequest("GET", "/tries/userID/64", null);
-             /*if(status === 200) {
-                 alert("!!!!!!!!!!!!!!!!!")
-                 //sendRequest("POST", '/try', obj);
-             };*/
+             let user_id = document.getElementById("user_id").value;
 
+             sendRequest("GET", "/tries/userID/" + user_id, null);
              return true;
          };
 
@@ -87,9 +81,9 @@
              xhr.onreadystatechange = function () {
                  if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
 
-                     $('html').html(xhr.responseText);
                      window.history.pushState("", "", url);
-
+                     $('html').html(xhr.responseText);
+                     //document.write(xhr.responseText);
                  }
              };
              xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
@@ -102,5 +96,4 @@
     </script>
 </div>
 </body>
-
 </html>

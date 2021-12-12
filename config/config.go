@@ -8,16 +8,14 @@ import (
 )
 
 type Config struct {
-	RawWebUrl        string   `yaml:"web_url"`
-	WebUrl           *url.URL `yaml:"-"`
-	BrokerUrl        string   `yaml:"broker_url"`
-	DBDriver         string   `yaml:"db_driver"`
-	DBConnection     string   `yaml:"db_connection"`
-	MemoryStorageUrl string   `yaml:"memory_storage_url"`
-	RootPath         string   `yaml:"root_path"`
-	TempPath         string   `yaml:"temp_path"`
-	TmpZipArchPath   string   `yaml:"tmp_zip_arch_path"`
-	TmpTestsPath     string   `yaml:"tmp_tests_path"`
+	RawWebUrl    string   `yaml:"web_url"`
+	WebUrl       *url.URL `yaml:"-"`
+	BrokerUrl    string   `yaml:"broker_url"`
+	DBDriver     string   `yaml:"db_driver"`
+	DBConnection string   `yaml:"db_connection"`
+	MemcachedUrl string   `yaml:"memcached_url"`
+	ZipArchPath  string   `yaml:"zip_arch_path"`
+	TestsPath    string   `yaml:"tests_path"`
 }
 
 func ConfigFromFile(file string) (*Config, error) {

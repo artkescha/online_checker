@@ -100,8 +100,8 @@
         xhr.onreadystatechange = function () {
             if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
 
-                $('html').html(xhr.responseText);
                 window.history.pushState("", "", url);
+                $('html').html(xhr.responseText);
             }
         };
         xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");

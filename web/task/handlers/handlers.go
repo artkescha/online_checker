@@ -38,7 +38,7 @@ type TaskHandler struct {
 	Tmpl           *template.Template
 	TasksRepo      repository.TaskRepo
 	SessionManager session.Manager
-	Config         config.Config
+	Config         *config.Config
 	Logger         *zap.SugaredLogger
 }
 
@@ -218,19 +218,20 @@ func (h TaskHandler) SolutionForm(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, `bad id`, http.StatusBadRequest)
 		return
 	}
-	/*user, err := request.ExtractContext(r)
+	user, err := request.ExtractContext(r)
 	if err != nil {
 		h.Logger.Error("extract use request context err", err)
 		http.Error(w, `extract use request context err`, http.StatusUnauthorized)
 		return
-	}*/
+	}
+
 	//TODO middelware later
 	//TODO replace later languageID = 1 (golang 1.13)
 	err = h.Tmpl.ExecuteTemplate(w, "send_solution.html", struct {
 		TaskID     int
 		LanguageID int
 		UserID     int64
-	}{TaskID: taskID, LanguageID: 1, UserID: 64})
+	}{TaskID: taskID, LanguageID: 1, UserID: user.ID})
 
 	if err != nil {
 		h.Logger.Error("execute send solution template err", err)
@@ -277,7 +278,7 @@ func (h TaskHandler) UploadTests(w http.ResponseWriter, r *http.Request) {
 	h.Logger.Debugf("MIME Header: %+v\n", handler.Header)
 
 	//make rootPath
-	fStorage, err := fileStorage.New(h.Config.TempPath, h.Config.RootPath)
+	fStorage, err := fileStorage.New(h.Config.ZipArchPath, h.Config.TestsPath)
 	if err != nil {
 		uploadError = err
 		h.Logger.Errorf("upload file failed, reason %s", uploadError)
@@ -298,7 +299,7 @@ func (h TaskHandler) UploadTests(w http.ResponseWriter, r *http.Request) {
 	}
 
 	unzpr := unzipper.New()
-	path := filepath.Join(h.Config.RootPath, taskID)
+	path := filepath.Join(h.Config.TestsPath, taskID)
 	if exist := kit.ExistsFolder(path); !exist {
 		if err := kit.EnsureDir(path); err != nil {
 			uploadError = err
@@ -332,7 +333,13 @@ func (h TaskHandler) DownloadTests(w http.ResponseWriter, r *http.Request) {
 		response.WriteResponse(w, http.StatusOK, "archive download successfully")
 	}()
 
-	rootPath := filepath.Join(h.Config.TmpTestsPath, taskID)
+	rootPath := filepath.Join(h.Config.TestsPath, taskID)
+
+	if !kit.ExistsFolder(rootPath) {
+		downloadError = fmt.Errorf("no exists test with task_id %s", taskID)
+		h.Logger.Errorf("error scanning files failed: %s", downloadError)
+		return
+	}
 
 	files, err := kit.FilePathWalkDir(rootPath, []string{".in", ".out"})
 	if err != nil {
@@ -341,7 +348,7 @@ func (h TaskHandler) DownloadTests(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	zpr, err := zipper.New(h.Config.TmpZipArchPath, ".zip")
+	zpr, err := zipper.New(h.Config.ZipArchPath, ".zip")
 	if err != nil {
 		downloadError = err
 		h.Logger.Errorf("new zipper with prefix .zip failed %s", err)
@@ -362,7 +369,7 @@ func (h TaskHandler) DownloadTests(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	//make rootPath
-	fStorage, err := fileStorage.New(h.Config.TmpZipArchPath, h.Config.RootPath)
+	fStorage, err := fileStorage.New(h.Config.ZipArchPath, h.Config.TestsPath)
 	if err != nil {
 		downloadError = err
 		h.Logger.Errorf("create file storage failed %s: ", err)

@@ -54,6 +54,7 @@ func (repo Repo) List(ctx context.Context, limit, offset uint32) ([]try.Try, err
 		if err != nil {
 			return nil, fmt.Errorf("read rows tries list failed: %s", err)
 		}
+		try.Created = try.Created.Local()
 		tries = append(tries, try)
 	}
 	return tries, nil
@@ -74,6 +75,7 @@ func (repo Repo) ListByUser(ctx context.Context, userID uint64, limit, offset ui
 		if err != nil {
 			return nil, fmt.Errorf("read rows tries list failed: %s", err)
 		}
+		try.Created = try.Created.Local()
 		tries = append(tries, try)
 	}
 	return tries, nil
@@ -93,6 +95,7 @@ func (repo Repo) GetByID(ctx context.Context, id uint64) (try.Try, error) {
 	if err != nil {
 		return try.Try{}, fmt.Errorf("scanning response failed: %s", err)
 	}
+	try_.Created = try_.Created.Local()
 	return try_, nil
 
 }
