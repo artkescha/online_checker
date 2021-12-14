@@ -14,7 +14,7 @@
 <body>
 <div class="container">
     <h1>Tasks</h1>
-    <a href="/tries/userID/{{.UserId}}" class="btn btn-primary">See your solutions</a>
+    <span class="btn btn-primary" id="see-your-solution">See your solutions</span>
     <table class="table">
         <thead>
         <tr>
@@ -31,9 +31,43 @@
         </tr>
         {{end}}
         </tbody>
+    </table>
+    <input class="form-control" name="user_id" id="user_id" type="hidden" value="{{.UserId}}" readonly>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
 
+<script type="text/javascript">
+
+    document.getElementById('see-your-solution').onclick = function() {
+        let user_id = document.getElementById("user_id").value;
+        console.log(user_id);
+        sendRequest("GET", "/tries/userID/" + user_id, null);
+        return true;
+    };
+
+    function sendRequest(method, url, data) {
+        var cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)online_checker\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+
+        let xhr = new XMLHttpRequest();
+        xhr.open(method, url);
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhr.setRequestHeader("Authorization", 'Bearer ' + cookieValue);
+        xhr.onreadystatechange = function () {
+            if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+
+                window.history.pushState("", "", url);
+                document.body.innerHTML = '';
+                document.write(xhr.responseText);
+            }
+        };
+        xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+        if (data != null) {
+            xhr.send(JSON.stringify(data));
+        } else {
+            xhr.send();
+        }
+    }
+</script>
 </body>
 </html>

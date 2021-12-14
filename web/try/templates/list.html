@@ -13,7 +13,10 @@
 </head>
 <body>
 <div class="container">
-    <h1>Your Tries</h1>
+
+</div>
+    <h1>Your Tries (last 10)   <span class="btn btn-primary" id="up-info">Update Data</span></h1>
+</div>
 
     <table class="table">
         <thead>
@@ -37,33 +40,42 @@
             <td>{{.Description}}</td>
             <td>{{.Created}}</td>
         </tr>
+        <input type="hidden" id="user_id" value={{.UserID}}>
         {{end}}
         </tbody>
+        </table>
 </div>
-
-<script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
 
 <script type="text/javascript">
 
-    $('.do-click').click(function() {
+    document.getElementById('up-info').onclick = function() {
+        let user_id = document.getElementById("user_id").value;
+        sendRequest("GET", "/tries/userID/" + user_id, null);
+        return true;
+    };
 
+    function sendRequest(method, url, data) {
         var cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)online_checker\s*\=\s*([^;]*).*$)|^.*$/, "$1");
 
-        console.log(cookieValue);
+        let xhr = new XMLHttpRequest();
+        xhr.open(method, url);
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhr.setRequestHeader("Authorization", 'Bearer ' + cookieValue);
+        xhr.onreadystatechange = function () {
+            if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
 
-        $elem = $(this);
-        $.ajax({
-            url: '/try/' + $elem.data("id"),
-            type: 'GET',
-            data: {},
-            headers: {
-                'Authorization':'Bearer ' + cookieValue,
-                'Content-Type': 'application/json',
-            },
-            success: function(resp) {},
-        });
-    })
+                window.history.pushState("", "", url);
+                document.body.innerHTML = '';
+                document.write(xhr.responseText);
+            }
+        };
+        xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+        if (data != null) {
+            xhr.send(JSON.stringify(data));
+        } else {
+            xhr.send();
+        }
+    }
 </script>
-
 </body>
 </html>

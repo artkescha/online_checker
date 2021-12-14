@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"github.com/artkescha/checker/online_checker/pkg/writer"
 	"go.uber.org/zap"
 	"html/template"
 	"math"
@@ -101,7 +102,6 @@ func main() {
 		nats.ReconnectWait(1*time.Minute),
 		nats.MaxReconnects(int(math.MaxUint32)),
 		nats.ReconnectHandler(func(nc *nats.Conn) {
-
 			logger.Info("got reconnected to host %s", nc.ConnectedUrl())
 		}))
 	defer func() {
@@ -118,6 +118,7 @@ func main() {
 		//TODO дубль подумать использовать ли интерфейс!!!!!!!!!
 		SessionManager: manager,
 		Transmitter:    transmitter.New(nc),
+		Writer:         writer.NewDBWriter(db),
 		Logger:         logger,
 	}
 

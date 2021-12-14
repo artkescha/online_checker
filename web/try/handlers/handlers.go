@@ -2,6 +2,8 @@ package handlers
 
 import (
 	"fmt"
+	"github.com/artkescha/checker/online_checker/pkg/tries/status"
+	"github.com/artkescha/checker/online_checker/pkg/writer"
 	"github.com/gorilla/mux"
 	"go.uber.org/zap"
 	"html/template"
@@ -30,6 +32,7 @@ type SolutionHandler struct {
 	TriesRepo      repository.TriesRepo
 	SessionManager session.Manager
 	Transmitter    transmitter.Transmitter
+	Writer         writer.Writer
 	Logger         *zap.SugaredLogger
 }
 
@@ -48,11 +51,19 @@ func (h SolutionHandler) SendSolution(w http.ResponseWriter, r *http.Request) {
 	}
 
 	try.Created = time.Now()
+	try.Status = status.Queue
+	try.Description = try.Status.String()
 	//try.UserID = user.ID
-
 	log.Printf("try: %v", try)
 
+	tryId, err := h.Writer.Write(try)
+	if err != nil {
+		response.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
+
 	apiTry := send_solution.Try{
+		Id:         uint64(tryId),
 		UserId:     uint64(user.ID),
 		Solution:   try.Solution,
 		Timestamp:  time.Now().Unix(),

@@ -29,17 +29,17 @@ $(BUILD_FOLDER)/windows/config.yaml:
 	@mkdir -p $(BUILD_FOLDER)/windows
 	generate-logconfig -service-name $(BINARY_NAME) -os windows > $(BUILD_FOLDER)/windows/config.yaml
 
-linux: etc-linux $(BUILD_FOLDER)/linux/config.yaml vendor ## Build artifacts for linux
+linux: etc-linux $(BUILD_FOLDER)/config.yaml vendor ## Build artifacts for linux
 	@printf $(PRINTF_FORMAT) BINARY_NAME: $(BINARY_NAME)
 	@printf $(PRINTF_FORMAT) BINARY_VERSION: $(BINARY_VERSION)
 	@printf $(PRINTF_FORMAT) BINARY_BUILD_DATE: $(BINARY_BUILD_DATE)
 	@printf $(PRINTF_FORMAT) VERSION_PATH: $(VERSION_PATH)
-	mkdir -p $(BUILD_FOLDER)/linux
-	env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags "-s -w -X $(VERSION_PATH).Version=$(BINARY_VERSION) -X $(VERSION_PATH).BuildDate=$(BINARY_BUILD_DATE)" -o $(BUILD_FOLDER)/linux/$(BINARY_NAME) .
+	mkdir -p $(BUILD_FOLDER)
+	env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags "-s -w -X $(VERSION_PATH).Version=$(BINARY_VERSION) -X $(VERSION_PATH).BuildDate=$(BINARY_BUILD_DATE)" -o $(BUILD_FOLDER)/$(BINARY_NAME) .
 
 etc-linux:
-	mkdir -p $(BUILD_FOLDER)/linux
-	cp -r etc/* $(BUILD_FOLDER)/linux/
+	mkdir -p $(BUILD_FOLDER)
+	cp -r etc/* $(BUILD_FOLDER)
 
 vendor: ## Get dependencies according to go.mod
 	env GO111MODULE=auto go mod vendor

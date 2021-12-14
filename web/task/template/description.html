@@ -21,6 +21,7 @@
     </div>
     </form>
 </div>
+<input type="hidden" id="task_id" value={{.ID}}>
 
 
 <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
@@ -32,15 +33,14 @@
 
     function submitForm(event) {
         const formData = new URLSearchParams(new FormData(this));
-        console.log(formData);
 
         var cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)online_checker\s*\=\s*([^;]*).*$)|^.*$/, "$1");
 
-        console.log(cookieValue);
+        let task_id = document.getElementById("task_id").value;
 
         // Собираем запрос к серверу
         let request = new Request(event.target.action, {
-            url: '/tasks/solutionForm/2',
+            url: '/tasks/solutionForm/' + task_id,
             method: 'POST',
             body: formData,
             headers: {
@@ -55,8 +55,11 @@
                     return res.text();
                 })
                 .then(data => {
+                        //$('html').html(data);
 
-                            $('html').html(data);
+                        document.body.innerHTML = '';
+                        document.write(data);
+
                         },
                         (error) => {
                             // Запрос не получилось отправить

@@ -153,7 +153,7 @@ func (h UserHandler) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	//TODO limit:3 offset:0 in request
-	tasks, err := h.TasksRepo.List(r.Context(), 100, 0, "created_at")
+	tasks, err := h.TasksRepo.List(r.Context(), 10, 0, "created_at")
 	if err != nil {
 		h.Logger.Error("get tasks list err", err)
 		http.Error(w, `DB err`, http.StatusInternalServerError)

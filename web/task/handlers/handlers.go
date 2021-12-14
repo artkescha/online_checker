@@ -45,12 +45,12 @@ type TaskHandler struct {
 func (h TaskHandler) List(w http.ResponseWriter, r *http.Request) {
 	user_, err := request.ExtractContext(r)
 	if err != nil {
-		h.Logger.Error("extract use request context err", err)
+		h.Logger.Errorf("extract use request context err %s", err)
 		http.Error(w, `extract use request context err`, http.StatusUnauthorized)
 		return
 	}
 	//TODO limit:3 offset:0 in request
-	tasks, err := h.TasksRepo.List(r.Context(), 100, 0, "created_at")
+	tasks, err := h.TasksRepo.List(r.Context(), 10, 0, "created_at")
 	if err != nil {
 		h.Logger.Error("get tasks list err", err)
 		http.Error(w, `DB err`, http.StatusInternalServerError)
@@ -220,7 +220,7 @@ func (h TaskHandler) SolutionForm(w http.ResponseWriter, r *http.Request) {
 	}
 	user, err := request.ExtractContext(r)
 	if err != nil {
-		h.Logger.Error("extract use request context err", err)
+		h.Logger.Errorf("extract use request context err %s", err)
 		http.Error(w, `extract use request context err`, http.StatusUnauthorized)
 		return
 	}

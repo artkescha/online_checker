@@ -53,7 +53,7 @@ func (m *SessionManager) GetSession(token string) (*Session, error) {
 
 	token_, err := jwt.ParseWithClaims(token, &Claims{}, hashSecretGetter)
 	if err != nil {
-		return nil, fmt.Errorf("token parser failed")
+		return nil, fmt.Errorf("token parser failed %s", err)
 	}
 	claims, ok := token_.Claims.(*Claims)
 

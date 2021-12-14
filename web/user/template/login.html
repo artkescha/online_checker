@@ -91,7 +91,11 @@
                     },
                     method: 'GET',
                     success: function(res) {
+                        document.body.innerHTML = '';
                         document.write(res);
+                        window.history.pushState("", "", redirect_url);
+
+                        //document.write(res);
                         //window.history.pushState("", "", "/dsd/");
                         //$('html').html(res);
                     }

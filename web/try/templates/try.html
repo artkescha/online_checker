@@ -27,7 +27,7 @@
         </div>
         <div class="form-group">
             <label for="solution">Solution:</label>
-            <textarea class="form-control" name="solution" id="solution" rows="20">{{.Solution}}</textarea>
+            <textarea class="form-control" name="solution" rows="30">{{.Solution}}</textarea>
         </div>
         <button type="submit" class="btn btn-primary" id="send_solution">Re Send Solution</button>
     </form>
@@ -54,8 +54,6 @@
 
         var cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)online_checker\s*\=\s*([^;]*).*$)|^.*$/, "$1");
 
-        console.log(cookieValue);
-
         // Собираем запрос к серверу
         let request = new Request(event.target.action, {
             url: '/try',
@@ -77,9 +75,7 @@
                     return response.text();
                 })
                 .then(data => {
-                            //alert('solution send successfully!');
                             let user_id = document.getElementById("user_id").value;
-                            //window.location.href="/tries/userID/" + user_id;
                             sendRequest("GET", "/tries/userID/" + user_id, null)
                         },
                         (error) => {
@@ -94,14 +90,16 @@
         var cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)online_checker\s*\=\s*([^;]*).*$)|^.*$/, "$1");
 
         let xhr = new XMLHttpRequest();
-        xhr.open(method, url, false);
+        xhr.open(method, url);
         xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         xhr.setRequestHeader("Authorization", 'Bearer ' + cookieValue);
         xhr.onreadystatechange = function () {
             if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
 
                 window.history.pushState("", "", url);
-                $('html').html(xhr.responseText);
+                document.body.innerHTML = '';
+                document.write(xhr.responseText);
+
             }
         };
         xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");

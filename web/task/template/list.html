@@ -15,7 +15,7 @@
 <body>
 <div class="container">
     <h1>Tasks</h1>
-    <span class="btn btn-primary" id="see-your-solution">See your solution</span>
+    <span class="btn btn-primary" id="see-your-solution">See your solutions</span>
     <table class="table">
         <thead>
         <tr>
@@ -41,7 +41,6 @@
     <input class="form-control" name="user_id" id="user_id" type="hidden" value="{{.UserId}}" readonly>
 
     <script type="text/javascript">
-         console.log("Тест работы!");
 
          $('.do-delete').click(function() {
              if(!confirm("Are you sure?")) {
@@ -54,7 +53,6 @@
                  type: 'DELETE',
                  data: {},
                  success: function(resp) {
-                     console.log(resp);
                      if(Object.values(resp)[0]) {
 
                          $elem.parent().parent().remove();
@@ -75,15 +73,15 @@
              var cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)online_checker\s*\=\s*([^;]*).*$)|^.*$/, "$1");
 
              let xhr = new XMLHttpRequest();
-             xhr.open(method, url, false);
+             xhr.open(method, url);
              xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
              xhr.setRequestHeader("Authorization", 'Bearer ' + cookieValue);
              xhr.onreadystatechange = function () {
                  if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
 
                      window.history.pushState("", "", url);
-                     $('html').html(xhr.responseText);
-                     //document.write(xhr.responseText);
+                     document.body.innerHTML = '';
+                     document.write(xhr.responseText);
                  }
              };
              xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
