@@ -89,7 +89,7 @@ func (h SolutionHandler) ListByUserID(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf(`userID not found %s`, err), http.StatusInternalServerError)
 		return
 	}
-	triesByUser, err := h.TriesRepo.ListByUser(r.Context(), uint64(userID), 100, 0)
+	triesByUser, err := h.TriesRepo.ListByUser(r.Context(), uint64(userID), 10, 0)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
