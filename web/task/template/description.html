@@ -11,7 +11,7 @@
 <body>
 
 <div class="container">
-    <form id="solution" method="post" action="/tasks/solutionForm/{{.ID}}">
+    <form id="solution_form">
     <div class="form-group text-center">
     <strong>{{.Title}}</strong>
     </div>
@@ -19,55 +19,49 @@
     <p>{{.Description}}</p>
         <button type="submit" id="send_solution" class="btn btn-primary">Send Solution</button>
     </div>
+        <input type="hidden" id="task_id" value={{.ID}}>
     </form>
 </div>
-<input type="hidden" id="task_id" value={{.ID}}>
 
 
 <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
 
 <script type="text/javascript">
-
-
-    document.getElementById('send_solution').addEventListener('click', submitForm);
+    document.getElementById('solution_form').addEventListener('submit', submitForm);
 
     function submitForm(event) {
-        const formData = new URLSearchParams(new FormData(this));
-
-        var cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)online_checker\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-
+        // Отменяем стандартное поведение браузера с отправкой формы
+        event.preventDefault();
         let task_id = document.getElementById("task_id").value;
+        sendRequest("GET", "/tasks/solutionForm/" + task_id, null);
+    }
 
-        // Собираем запрос к серверу
-        let request = new Request(event.target.action, {
-            url: '/tasks/solutionForm/' + task_id,
-            method: 'POST',
-            body: formData,
-            headers: {
-                'Authorization':'Bearer ' + cookieValue,
-                'Content-Type': 'application/json',
-            },
-        });
+    function sendRequest(method, url, data) {
+        let cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)online_checker\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+        let xhr = new XMLHttpRequest();
+        xhr.open(method, url);
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhr.setRequestHeader("Authorization", 'Bearer ' + cookieValue);
+        xhr.onreadystatechange = function () {
+        if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
 
-        // Отправляем (асинхронно!)
-        fetch(request).then(
-                (res)  => {
-                    return res.text();
-                })
-                .then(data => {
-                        //$('html').html(data);
-
-                        document.body.innerHTML = '';
-                        document.write(data);
-
-                        },
-                        (error) => {
-                            // Запрос не получилось отправить
-                            alert('solution send failed: ' + error);
-                        }
-                );
+        window.history.pushState("", "", url);
+        document.body.innerHTML = '';
+        document.write(xhr.responseText);
+    }
+    };
+        xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+        if (data != null) {
+        xhr.send(JSON.stringify(data));
+    } else {
+        xhr.send();
+    }
     }
 </script>
+
+
+
+
 
 </body>
 </html>

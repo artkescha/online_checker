@@ -13,7 +13,7 @@
 <div class="container">
     <h1>Send your solution</h1>
 
-    <form name="myForm" id="myForm">
+    <form id="solution_form" method="post" action="/try">
         <div class="form-group">
             <label for="task_id">Task ID</label>
             <input class="form-control" name="task_id" id="task_id" value="{{.TaskID}}" readonly>
@@ -35,45 +35,54 @@
 <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
 
 <script type="text/javascript">
-    //window.onload = function() {
-    document.getElementById('send_solution').onclick = function() {
 
-        let form = document.getElementById('myForm');
+    document.getElementById('solution_form').addEventListener('submit', submitForm);
+
+    function submitForm(event) {
+        // Отменяем стандартное поведение браузера с отправкой формы
+        event.preventDefault();
         // event.target — это HTML-элемент form
-        let formData = new FormData(form);
+        let formData = new FormData(event.target);
+
         // Собираем данные формы в объект
         let obj = {};
         formData.forEach((value, key) => obj[key] = value);
-        sendSolution("POST", "/try", obj);
-        return true;
-    }/*}*/;
 
+        let cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)online_checker\s*\=\s*([^;]*).*$)|^.*$/, "$1");
 
-    function sendSolution(method, url, data) {
+        // Собираем запрос к серверу
+        let request = new Request(event.target.action, {
+            url: '/try',
+            method: 'POST',
+            body: JSON.stringify(obj),
+            headers: {
+                'Authorization':'Bearer ' + cookieValue,
+                'Content-Type': 'application/json',
+            },
+        });
 
-        var cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)online_checker\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-
-        let xhr = new XMLHttpRequest();
-        xhr.open(method, url);
-        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-        xhr.setRequestHeader("Authorization", 'Bearer ' + cookieValue);
-
-        let user_id = document.getElementById("user_id").value;
-
-        sendRequest("GET", "/tries/userID/" + user_id, null)
-         xhr.onreadystatechange = function () {
-             if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                 sendRequest("GET", "/tries/userID/" + user_id, null)
-             }
-         };
-        if (data != null) {
-            xhr.send(JSON.stringify(data));
-        } else {
-            xhr.send();
-        }
+        // Отправляем (асинхронно!)
+        fetch(request).then(
+            (response)  => {
+                if (response.status === 401){
+                    window.location.href="/";
+                    return Promise.reject(response);
+                }
+                return response.text();
+            })
+            .then(data => {
+                    let user_id = document.getElementById("user_id").value;
+                    sendRequest("GET", "/tries/userID/" + user_id, null)
+                },
+                (error) => {
+                    // Запрос не получилось отправить
+                    alert('solution send failed: ' + error.toString());
+                }
+            );
     }
 
     function sendRequest(method, url, data) {
+
         var cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)online_checker\s*\=\s*([^;]*).*$)|^.*$/, "$1");
 
         let xhr = new XMLHttpRequest();
@@ -86,6 +95,7 @@
                 window.history.pushState("", "", url);
                 document.body.innerHTML = '';
                 document.write(xhr.responseText);
+
             }
         };
         xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
@@ -95,10 +105,6 @@
             xhr.send();
         }
     }
-    
-    
-    
-
 </script>
 </body>
 </html>

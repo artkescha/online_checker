@@ -60,7 +60,7 @@ func NewRouter(userHandlers handlers.User, taskHandlers task_handlers.TaskHandle
 	router.HandleFunc("/tasks/{id}", taskHandlers.Delete).Methods("DELETE")
 
 	//solution form {id - taskID}
-	router.HandleFunc("/tasks/solutionForm/{taskID}", middlewares.Authorization(sessionManager, taskHandlers.SolutionForm)).Methods("POST")
+	router.HandleFunc("/tasks/solutionForm/{taskID}", middlewares.Authorization(sessionManager, taskHandlers.SolutionForm)).Methods("GET")
 
 	//send solution
 	router.HandleFunc("/try", middlewares.Authorization(sessionManager, tryHandler.SendSolution)).Methods("POST")

@@ -13,7 +13,7 @@
 <div class="container">
     <h1>Your solution</h1>
 
-    <form id="solution" method="post" action="/try">
+    <form id="solution_form" method="post" action="/try">
         <div class="form-group">
 
             <label for="task_id">Task ID</label>
@@ -27,9 +27,9 @@
         </div>
         <div class="form-group">
             <label for="solution">Solution:</label>
-            <textarea class="form-control" name="solution" rows="30">{{.Solution}}</textarea>
+            <textarea class="form-control" name="solution" rows="15">{{.Solution}}</textarea>
         </div>
-        <button type="submit" class="btn btn-primary" id="send_solution">Re Send Solution</button>
+        <button type="submit" class="btn btn-primary" id="send_solution">Re Send</button>
     </form>
 
 </div>
@@ -40,7 +40,7 @@
 <script type="text/javascript">
 
 
-    document.getElementById('solution').addEventListener('submit', submitForm);
+    document.getElementById('solution_form').addEventListener('submit', submitForm);
 
     function submitForm(event) {
         // Отменяем стандартное поведение браузера с отправкой формы
@@ -52,7 +52,7 @@
         let obj = {};
         formData.forEach((value, key) => obj[key] = value);
 
-        var cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)online_checker\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+        let cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)online_checker\s*\=\s*([^;]*).*$)|^.*$/, "$1");
 
         // Собираем запрос к серверу
         let request = new Request(event.target.action, {
