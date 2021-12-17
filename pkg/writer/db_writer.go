@@ -15,7 +15,7 @@ func NewDBWriter(db *sql.DB) *DBWriter {
 	}
 }
 
-func (w DBWriter) Write(one try.Try) (int64, error) {
+func (w DBWriter) Write(one *try.Try) (int64, error) {
 	var lastInsertId int64
 	row := w.db.QueryRow("INSERT INTO attempts(user_id, solution, status, description, task_id, language_id) "+
 		"VALUES($1, $2, $3, $4, $5, $6) returning id;",
@@ -24,5 +24,14 @@ func (w DBWriter) Write(one try.Try) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
+	one.ID = int(lastInsertId)
 	return lastInsertId, nil
+}
+
+func (w DBWriter) Update(one *try.Try) error {
+	_, err := w.db.Exec("UPDATE attempts SET description = $1, status = $2 WHERE id = $3", one.Description, one.Status, one.ID)
+	if err != nil {
+		return err
+	}
+	return nil
 }

@@ -2,9 +2,9 @@ package transmitter
 
 import (
 	"github.com/artkescha/grader_api/send_solution"
+	"github.com/nats-io/stan.go"
+	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
-
-	"github.com/nats-io/nats.go"
 )
 
 //go:generate mockgen -destination=./transmitter_mock.go -package=transmitter . Transmitter
@@ -14,11 +14,12 @@ type Transmitter interface {
 }
 
 type Publisher struct {
-	natsConn *nats.Conn
+	natsConn stan.Conn
+	logger   *zap.SugaredLogger
 }
 
-func New(natsConn *nats.Conn) *Publisher {
-	return &Publisher{natsConn: natsConn}
+func New(natsConn stan.Conn, logger *zap.SugaredLogger) *Publisher {
+	return &Publisher{natsConn: natsConn, logger: logger}
 }
 
 func (s *Publisher) Transmit(topic string, try *send_solution.Try) error {
@@ -28,10 +29,15 @@ func (s *Publisher) Transmit(topic string, try *send_solution.Try) error {
 		return err
 	}
 
-	err = s.natsConn.Publish(topic, data)
+	_, err = s.natsConn.PublishAsync(topic, data, func(guid string, err error) {
+		if err != nil {
+			s.logger.Errorf("send publish msg with guid %s failed %s", guid, err)
+			return
+		}
+		s.logger.Debugf("send publish msg with guid %s sucsess", guid)
+	})
 	if err != nil {
 		return err
 	}
-
 	return nil
 }

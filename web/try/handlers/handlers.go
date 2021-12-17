@@ -32,7 +32,7 @@ type SolutionHandler struct {
 	TriesRepo      repository.TriesRepo
 	SessionManager session.Manager
 	Transmitter    transmitter.Transmitter
-	Writer         writer.Writer
+	Writer         writer.WriterUpdater
 	Logger         *zap.SugaredLogger
 }
 
@@ -52,16 +52,15 @@ func (h SolutionHandler) SendSolution(w http.ResponseWriter, r *http.Request) {
 
 	try.Created = time.Now()
 	try.Status = status.Queue
-	try.Description = try.Status.String()
+	try.Description = "sent to queue"
 	//try.UserID = user.ID
 	log.Printf("try: %v", try)
 
-	tryId, err := h.Writer.Write(try)
+	tryId, err := h.Writer.Write(&try)
 	if err != nil {
 		response.WriteError(w, http.StatusInternalServerError, err)
 		return
 	}
-
 	apiTry := send_solution.Try{
 		Id:         uint64(tryId),
 		UserId:     uint64(user.ID),
@@ -73,12 +72,17 @@ func (h SolutionHandler) SendSolution(w http.ResponseWriter, r *http.Request) {
 
 	err = h.Transmitter.Transmit("solution", &apiTry)
 	if err != nil {
-		h.Logger.Error("solution transmit failed", zap.Error(err))
+		try.Status = status.Failure
+		try.Description = fmt.Sprintf("send solution failed %s", err)
+		err := h.Writer.Update(&try)
+		if err != nil {
+			h.Logger.Errorf("update try with id %d failed %s", try.ID, err)
+			return
+		}
+		h.Logger.Errorf("solution transmit failed %s", err)
 		http.Error(w, `{"error": "publish to broker failed"}`, http.StatusInternalServerError)
 		return
 	}
-
-	//http.Redirect(w, r, "/tries/userID/64", http.StatusSeeOther)
 }
 
 func (h SolutionHandler) ListByUserID(w http.ResponseWriter, r *http.Request) {

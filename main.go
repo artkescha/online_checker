@@ -2,28 +2,26 @@ package main
 
 import (
 	"database/sql"
-	"github.com/artkescha/checker/online_checker/pkg/writer"
+	_ "github.com/lib/pq"
+	"github.com/nats-io/stan.go"
 	"go.uber.org/zap"
 	"html/template"
 	"math"
-	"time"
 
 	"github.com/artkescha/checker/online_checker/config"
 	"github.com/artkescha/checker/online_checker/pkg/middlewares"
 	"github.com/artkescha/checker/online_checker/pkg/session"
 	task_repo "github.com/artkescha/checker/online_checker/pkg/task/repository"
 	try_repo "github.com/artkescha/checker/online_checker/pkg/tries/repository"
-	user_repo "github.com/artkescha/checker/online_checker/pkg/user/repository"
-	"github.com/bradfitz/gomemcache/memcache"
-	_ "github.com/lib/pq"
-	"github.com/nats-io/nats.go"
-
 	"github.com/artkescha/checker/online_checker/pkg/tries/transmitter"
+	user_repo "github.com/artkescha/checker/online_checker/pkg/user/repository"
+	"github.com/artkescha/checker/online_checker/pkg/writer"
 	"github.com/artkescha/checker/online_checker/web/router"
 	"github.com/artkescha/checker/online_checker/web/server"
 	task_handlers "github.com/artkescha/checker/online_checker/web/task/handlers"
 	try_handlers "github.com/artkescha/checker/online_checker/web/try/handlers"
 	"github.com/artkescha/checker/online_checker/web/user/handlers"
+	"github.com/bradfitz/gomemcache/memcache"
 )
 
 func main() {
@@ -98,17 +96,35 @@ func main() {
 		Logger:         logger,
 	}
 
-	nc, err := nats.Connect("nats://172.16.238.13:4222",
-		nats.ReconnectWait(1*time.Minute),
-		nats.MaxReconnects(int(math.MaxUint32)),
-		nats.ReconnectHandler(func(nc *nats.Conn) {
-			logger.Info("got reconnected to host %s", nc.ConnectedUrl())
-		}))
+	//nc, err := nats.Connect("nats://172.16.238.13:4222",
+	//	nats.ReconnectWait(1*time.Minute),
+	//	nats.MaxReconnects(int(math.MaxUint32)),
+	//	nats.ReconnectHandler(func(nc *nats.Conn) {
+	//		logger.Info("got reconnected to host %s", nc.ConnectedUrl())
+	//	}))
+	//defer func() {
+	//	nc.Close()
+	//}()
+	//if err != nil {
+	//	logger.Error("nats connection %s", err)
+	//	return
+	//}
+
+	// Send PINGs every 10 seconds, and fail after 5 PINGs without any response.
+	brokerConnect, err := stan.Connect("test-cluster", "test-client_1",
+		stan.NatsURL(config_.BrokerUrl))
+	stan.Pings(60, math.MaxUint32)
+	stan.SetConnectionLostHandler(func(_ stan.Conn, reason error) {
+		logger.Errorf("Connection lost, reason: %v", reason)
+	})
+
 	defer func() {
-		nc.Close()
+		if err := brokerConnect.Close(); err != nil {
+			logger.Errorf("connect to nats-server with url %s failed: %s", config_.BrokerUrl, err)
+		}
 	}()
 	if err != nil {
-		logger.Error("nats connection %s", err)
+		logger.Errorf("connect to nats-server with url %s failed: %s", config_.BrokerUrl, err)
 		return
 	}
 
@@ -117,7 +133,7 @@ func main() {
 		TriesRepo: try_repo.NewTriesRepo(db),
 		//TODO дубль подумать использовать ли интерфейс!!!!!!!!!
 		SessionManager: manager,
-		Transmitter:    transmitter.New(nc),
+		Transmitter:    transmitter.New(brokerConnect, logger),
 		Writer:         writer.NewDBWriter(db),
 		Logger:         logger,
 	}

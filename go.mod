@@ -9,9 +9,10 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/golang/mock v1.5.0
 	github.com/gorilla/mux v1.8.0
-	github.com/lib/pq v1.10.0
+	github.com/lib/pq v1.10.4
 	github.com/nats-io/nats-server/v2 v2.6.6 // indirect
-	github.com/nats-io/nats.go v1.13.1-0.20211122170419-d7c1d78a50fc
+	github.com/nats-io/nats-streaming-server v0.23.2 // indirect
+	github.com/nats-io/stan.go v0.10.2
 	github.com/satori/go.uuid v1.2.0
 	go.uber.org/zap v1.16.0
 	golang.org/x/net v0.0.0-20210226172049-e18ecbb05110
