@@ -11,8 +11,8 @@ import (
 
 type TaskRepo interface {
 	Insert(ctx context.Context, task task.Task) (*task.Task, error)
-	List(ctx context.Context, limit, offset uint32, sortField string) ([]task.Task, error)
-	ListByUser(ctx context.Context, userID uint64, limit, offset uint32, sortField string) ([]task.Task, error)
+	List(ctx context.Context, limit *uint32, offset uint32, sortField string) ([]task.Task, error)
+	ListByUser(ctx context.Context, userID uint64, limit *uint32, offset uint32, sortField string) ([]task.Task, error)
 	GetByID(ctx context.Context, id int) (*task.Task, error)
 	Update(ctx context.Context, task *task.Task) (*task.Task, error)
 	Delete(ctx context.Context, id uint32) (bool, error)
@@ -44,7 +44,7 @@ func (repo Repo) Insert(ctx context.Context, task task.Task) (*task.Task, error)
 	return &task, nil
 }
 
-func (repo Repo) List(ctx context.Context, limit, offset uint32, sortField string) ([]task.Task, error) {
+func (repo Repo) List(ctx context.Context, limit *uint32, offset uint32, sortField string) ([]task.Task, error) {
 	rows, err := repo.db.Query("SELECT * FROM tasks ORDER BY $1 LIMIT $2 OFFSET $3", sortField, limit, offset)
 	if err != nil {
 		return []task.Task{}, fmt.Errorf("query tasks list failed: %s", err)
@@ -64,7 +64,7 @@ func (repo Repo) List(ctx context.Context, limit, offset uint32, sortField strin
 }
 
 //TODO implement later
-func (repo Repo) ListByUser(ctx context.Context, userID uint64, limit, offset uint32, sortField string) ([]task.Task, error) {
+func (repo Repo) ListByUser(ctx context.Context, userID uint64, limit *uint32, offset uint32, sortField string) ([]task.Task, error) {
 	panic("implement list by user")
 	//return nil, nil
 }
@@ -82,12 +82,12 @@ func (repo Repo) GetByID(ctx context.Context, id int) (*task.Task, error) {
 
 func (repo Repo) Update(ctx context.Context, task *task.Task) (*task.Task, error) {
 	repo.db.QueryRow("UPDATE tasks SET title = $1, description = $2 where id=$3", task.Title, task.Description, task.ID)
-	//TODO!!!!!!!!!!!!!!!
+	//TODO check err
 	return nil, nil
 }
 
 func (repo Repo) Delete(ctx context.Context, id uint32) (bool, error) {
-	//TODO!!!!!!!!!!!!!!!!!
+	//TODO check err
 	repo.db.QueryRow("DELETE FROM tasks where id = $1", id)
 	return true, nil
 }

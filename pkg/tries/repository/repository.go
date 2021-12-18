@@ -11,8 +11,8 @@ import (
 
 type TriesRepo interface {
 	Insert(ctx context.Context, try try.Try) error
-	List(ctx context.Context, limit, offset uint32) ([]try.Try, error)
-	ListByUser(ctx context.Context, userID uint64, limit, offset uint32) ([]try.Try, error)
+	List(ctx context.Context, limit *uint32, offset uint32) ([]try.Try, error)
+	ListByUser(ctx context.Context, userID uint64, limit *uint32, offset uint32) ([]try.Try, error)
 	GetByID(ctx context.Context, id uint64) (try.Try, error)
 }
 
@@ -41,7 +41,7 @@ func (repo Repo) Insert(ctx context.Context, try try.Try) error {
 	return nil
 }
 
-func (repo Repo) List(ctx context.Context, limit, offset uint32) ([]try.Try, error) {
+func (repo Repo) List(ctx context.Context, limit *uint32, offset uint32) ([]try.Try, error) {
 	rows, err := repo.db.Query("SELECT * FROM attempts ORDER BY created_at DESC LIMIT $1 OFFSET $2", limit, offset)
 	if err != nil {
 		return []try.Try{}, fmt.Errorf("query tries list failed: %s", err)
@@ -60,9 +60,9 @@ func (repo Repo) List(ctx context.Context, limit, offset uint32) ([]try.Try, err
 	return tries, nil
 }
 
-func (repo Repo) ListByUser(ctx context.Context, userID uint64, limit, offset uint32) ([]try.Try, error) {
+func (repo Repo) ListByUser(ctx context.Context, userID uint64, limit *uint32, offset uint32) ([]try.Try, error) {
 	rows, err := repo.db.Query("SELECT * FROM attempts WHERE user_id = $1 ORDER BY attempts.created_at DESC LIMIT $2 OFFSET $3",
-		userID, limit, offset)
+		userID, nil, offset)
 	if err != nil {
 		return []try.Try{}, fmt.Errorf("query tries list failed: %s", err)
 	}
